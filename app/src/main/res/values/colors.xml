@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <color name="separatorColor">#49492dd6</color>
+
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#0c105b</color>
+    <color name="colorBackground">#2c424548</color>
+    <color name="eventBlockBackground">#2299aec4</color>
+    <color name="transparent">#00ffffff</color>
+    <color name="headlineTextColor">#d7ffffff</color>
+</resources>

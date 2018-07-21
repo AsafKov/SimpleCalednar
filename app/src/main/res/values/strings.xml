@@ -1,0 +1,22 @@
+<resources>
+
+    // activity_creator strings:
+    <string name="eventTitleHint">Event Title</string>
+    <string name="eventDetails">Details</string>
+    <string name="bankCheckBox">Bank event</string>
+    <string name="untilNextEvent">Until next event</string>
+    <string name="startTextView">Start:</string>
+    <string name="endTextView">End:</string>
+    <string name="save">SAVE</string>
+
+    // general
+    <string name="okButton">OK</string>
+    <string name="overrideOption">OVERRIDE</string>
+    <string name="resumeEditingOption">RESUME EDITING</string>
+    <string name="overrideDialogMessage">This event overrides previous events</string>
+    <string name="overrideDialogProgression">How would you like to continue?</string>
+
+    <string name="durationHours">%dh\u0020</string>
+    <string name="durationMinutes">%dmin</string>
+
+</resources>
