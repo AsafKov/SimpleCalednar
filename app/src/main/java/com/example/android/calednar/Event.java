@@ -2,18 +2,19 @@ package com.example.android.calednar;
 
 import android.content.Context;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
-public class Event {
+public class Event{
 
     public final static int START_TIME_KEY = 1;
     public final static int END_TIME_KEY = 2;
 
     private Day mDayParent;
-    private String mEventTitle;
-    private String mEventDetails;
+    private String mLabel;
+    private String mComment;
     private UUID mId;
 
     private int mStartAtMinuteInDay;
@@ -26,8 +27,8 @@ public class Event {
 
     public Event clone(){
         Event cloneEvent = new Event(this.mDayParent);
-        cloneEvent.setEventTitle(this.getEventTitle());
-        cloneEvent.setEventDetails(this.getEventDetails());
+        cloneEvent.setLabel(this.mLabel);
+        cloneEvent.setComment(this.mComment);
 
         return cloneEvent;
     }
@@ -49,7 +50,7 @@ public class Event {
         }
     }
 
-    public String getDuration(Context context){
+    public String getDurationInFormat(Context context){
         String duration = "";
 
         int hours = (mEndAtMinuteInDay - mStartAtMinuteInDay)/60;
@@ -67,20 +68,20 @@ public class Event {
 
     public int getEndTime(){ return this.mEndAtMinuteInDay; }
 
-    public String getEventTitle(){
-        return this.mEventTitle;
+    public String getLabel(){
+        return this.mLabel;
     }
 
-    public void setEventTitle(String mEventTitle){
-        this.mEventTitle = mEventTitle;
+    public void setLabel(String mLabel){
+        this.mLabel = mLabel;
     }
 
-    public String getEventDetails(){
-        return this.mEventDetails;
+    public String getComment(){
+        return this.mComment;
     }
 
-    public void setEventDetails(String mEventDetails){
-        this.mEventDetails = mEventDetails;
+    public void setComment(String mComment){
+        this.mComment = mComment;
     }
 
     public UUID getId(){
@@ -94,4 +95,6 @@ public class Event {
 
         return calendar.getTime();
     }
+
+    public Day getParent(){ return this.mDayParent; }
 }

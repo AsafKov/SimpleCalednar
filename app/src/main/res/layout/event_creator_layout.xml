@@ -10,42 +10,44 @@
     android:background="@color/colorBackground">
 
     <EditText
-        android:id="@+id/newEventTitle"
+        android:id="@+id/newEventLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
-        android:hint="@string/eventTitleHint"
+        android:hint="@string/eventLabelHint"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:inputType="" />
 
     <TextView
         android:id="@+id/separator1"
         android:layout_width="match_parent"
         android:layout_height="20dp"
         android:background="@color/separatorColor"
-        app:layout_constraintBottom_toTopOf="@+id/newEventDetails"
+        app:layout_constraintBottom_toTopOf="@+id/newEventComment"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/newEventTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/newEventLabel" />
 
     <EditText
-        android:id="@+id/newEventDetails"
+        android:id="@+id/newEventComment"
         style="@style/Widget.AppCompat.Light.AutoCompleteTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="80dp"
-        android:hint="@string/eventDetails"
+        android:hint="@string/eventComment"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.14"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/newEventTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/newEventLabel"
+        android:inputType="" />
 
     <TextView
         android:id="@+id/separator2"
@@ -58,7 +60,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/newEventDetails"
+        app:layout_constraintTop_toBottomOf="@+id/newEventComment"
         app:layout_constraintVertical_bias="0.0" />
 
     <LinearLayout
@@ -138,5 +140,23 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/separator2"
         app:layout_constraintVertical_bias="0.933" />
+
+    <ImageButton
+        android:id="@+id/reminderButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="?android:attr/colorButtonNormal"
+        android:contentDescription="@string/reminderButton"
+        android:src="@android:drawable/ic_lock_idle_alarm"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.08"
+        app:layout_constraintStart_toEndOf="@+id/linearLayout"
+        app:layout_constraintTop_toBottomOf="@+id/separator2"
+        app:layout_constraintVertical_bias="0.097" />
 
 </android.support.constraint.ConstraintLayout>

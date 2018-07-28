@@ -4,6 +4,7 @@ import android.support.annotation.Nullable;
 import android.text.format.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.UUID;
 
 public class Day{
@@ -19,7 +20,6 @@ public class Day{
     private ArrayList<Event> mEventsList;
 
     private Event editedEvent;
-    private Event mTemporarySavedEvent; // Strictly for app-configuration on EventCreatorFragment
 
     public Day(Date mDate){
         this.mDate = mDate;
@@ -34,11 +34,24 @@ public class Day{
     }
 
     public void addEvent(Event event){
-        mEventsList.add(event);
-
         for(int i=event.getStartTime(); i<event.getEndTime(); i++){
             mMinuteLevelEventClassification[i] = event.getId();
         }
+
+        int position = getIndex(event);
+        if(mEventsList.isEmpty() || position == mEventsList.size()){
+            mEventsList.add(event);
+            return;
+        }
+
+        LinkedList<Event> saveForReinsertion = new LinkedList<>();
+        while(position != mEventsList.size()) {
+            saveForReinsertion.add(mEventsList.get(position));
+            mEventsList.remove(position);
+        }
+        mEventsList.add(event);
+        while(!saveForReinsertion.isEmpty())
+            mEventsList.add(saveForReinsertion.removeFirst());
     }
 
     public void removeEvent(Event[] events){
@@ -80,20 +93,6 @@ public class Day{
                 return findEventById(mMinuteLevelEventClassification[i]);
         }
         return null;
-    }
-
-    public void setTemporarySavedEvent(Event event){
-        this.mTemporarySavedEvent = event;
-    }
-
-    public Event getTemporarySavedEvent(){
-        Event temp = mTemporarySavedEvent;
-        mTemporarySavedEvent = null;
-        return temp;
-    }
-
-    public void setEditedEvent(Event editedEvent){
-        this.editedEvent = editedEvent;
     }
 
     public Event getEditedEvent(){ return this.editedEvent; }

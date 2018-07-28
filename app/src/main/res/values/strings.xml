@@ -1,8 +1,8 @@
 <resources>
 
     // activity_creator strings:
-    <string name="eventTitleHint">Event Title</string>
-    <string name="eventDetails">Details</string>
+    <string name="eventLabelHint">Event Label</string>
+    <string name="eventComment">Comment</string>
     <string name="bankCheckBox">Bank event</string>
     <string name="untilNextEvent">Until next event</string>
     <string name="startTextView">Start:</string>
@@ -18,5 +18,6 @@
 
     <string name="durationHours">%dh\u0020</string>
     <string name="durationMinutes">%dmin</string>
+    <string name="reminderButton"><![CDATA[Alarm&Notification Button]]></string>
 
 </resources>

@@ -16,30 +16,22 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.UUID;
 
 public class EventCreatorFragment extends Fragment {
 
+    public static final String EX_EVENT_ID = "extraEventId";
+
     // Toasts
-    private static final String NO_TITLE_TOAST = "Please Insert title";
+    private static final String NO_TITLE_TOAST = "Please choose label";
     private static final String TIME_PARADOX_TOAST = "Your activity starts after it ends. " +
             "Please deliver your time machine to the nearest police station";
 
     // App configuration keys
-    private static final String  KEY_DAY_ID = "dayIdKey";
-    private static final String KEY_TITLE = "titleKey";
-    private static final String KEY_DETAILS = "detailsKey";
-    private static final String KEY_START_HOUR = "startHourKey";
-    private static final String KEY_START_MINUTE = "startMinuteKey";
-    private static final String KEY_END_HOUR = "endHourKey";
-    private static final String KEY_END_MINUTE = "endMinuteKey";
-
-
-    // widgets
-    private EditText mNewEventTitle, mNewEventDetails;
-    private TextView mFromTimeTextView, mToTimeTextView;
-    private Button mSaveButton;
+    private static final String KEY_DAY_PARENT_ID = "dayParentId";
+    private static final String KEY_EVENT_ID = "eventId";
+    private static final String KEY_EDITED_STARTING_TIME = "editedStartingTime";
+    private static final String KEY_EDITED_ENDING_TIME = "editedEndingTime";
 
     // TimePickerDialog tags, codes and keys
     public static final int FROM_TIME_REQUEST_CODE = -1;
@@ -53,38 +45,71 @@ public class EventCreatorFragment extends Fragment {
     public static final String OVERRIDE_DIALOG_TAG = "overrideDialogTag";
     public static final int OVERRIDE_DIALOG_REQUEST = 2;
 
+    // Widgets
+    private EditText mNewEventLabel, mNewEventComment;
+    private TextView mFromTimeTextView, mToTimeTextView;
+    private Button mSaveButton;
+
     private Day mDayParent;
     private Calendar mStartCalendar = Calendar.getInstance();
     private Calendar mEndCalendar = Calendar.getInstance();
 
-    // If an event is being edited, rather than a new one being created
-    private UUID mEventId;
     private Event mThisEvent;
+    private NotificationPublisher notificationPublisher = new NotificationPublisher();
+    private UUID mEventId; // If an event is being edited, rather than a new one being created
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
-        mDayParent = Day.findDayById(((UUID)getActivity().getIntent().getSerializableExtra(DayViewFragment.EXTRA_DAY_PARENT_ID)));
-        mEventId = (UUID)getActivity().getIntent().getSerializableExtra(DayViewFragment.EXTRA_EVENT_ID);
 
-        Event lastOnDay = mDayParent.getLastOnDay();
-
-        // If received an event id, set calendar to it's time
-        if(mEventId == null) {
-            mThisEvent = new Event(mDayParent);
-            if(lastOnDay != null) {
-                mStartCalendar.set(Calendar.HOUR_OF_DAY, lastOnDay.getEndTime() / 60);
-                mStartCalendar.set(Calendar.MINUTE, lastOnDay.getEndTime() % 60);
-                mEndCalendar.set(Calendar.HOUR_OF_DAY, mStartCalendar.get(Calendar.HOUR_OF_DAY) + 1);
-                mEndCalendar.set(Calendar.MINUTE, mStartCalendar.get(Calendar.MINUTE));
-            }
+        if(savedInstanceState != null && !savedInstanceState.isEmpty()){
+            mDayParent = Day.findDayById(UUID.fromString(savedInstanceState.getString(KEY_DAY_PARENT_ID)));
+            if(savedInstanceState.get(KEY_EVENT_ID) != null)
+                mEventId = UUID.fromString(savedInstanceState.getString(KEY_EVENT_ID));
+            else
+                mEventId = null;
         }
         else {
-            mThisEvent = mDayParent.findEventById(mEventId);
-            mStartCalendar.set(Calendar.HOUR_OF_DAY, mThisEvent.getStartTime()/60);
-            mStartCalendar.set(Calendar.MINUTE, mThisEvent.getStartTime()%60);
+            mDayParent = Day.findDayById(((UUID)getActivity().getIntent().getSerializableExtra(RecyclerViewAdapter.EX_DAY_ID)));
+            mEventId = (UUID)getActivity().getIntent().getSerializableExtra(RecyclerViewAdapter.EX_EVENT_ID);
         }
+
+        // Determine whatever it is an edit or not
+        if(mEventId == null)
+            mThisEvent = new Event(mDayParent);
+        else
+            mThisEvent = mDayParent.findEventById(mEventId);
+
+        adjustCalendars(savedInstanceState);
+    }
+
+    private void adjustCalendars(Bundle savedInstanceState){
+        int startingTime = 0;
+        int endingTime = 60;
+        Event previousEvent;
+        if(savedInstanceState != null && !savedInstanceState.isEmpty()){
+            startingTime = savedInstanceState.getInt(KEY_EDITED_STARTING_TIME);
+            endingTime = savedInstanceState.getInt(KEY_EDITED_ENDING_TIME);
+        }
+        else{
+            if(mEventId != null){
+                startingTime = mThisEvent.getStartTime();
+                endingTime = mThisEvent.getEndTime();
+            }
+            else{
+                previousEvent = mDayParent.getLastOnDay();
+                if(previousEvent != null){
+                    startingTime = previousEvent.getEndTime();
+                    endingTime = startingTime + 60;
+                }
+            }
+        }
+
+        mStartCalendar.set(Calendar.HOUR_OF_DAY, startingTime/60);
+        mStartCalendar.set(Calendar.MINUTE, startingTime%60);
+        mEndCalendar.set(Calendar.HOUR_OF_DAY, endingTime/60);
+        mEndCalendar.set(Calendar.MINUTE, endingTime%60);
     }
 
     @Override
@@ -95,32 +120,19 @@ public class EventCreatorFragment extends Fragment {
         return v;
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState){
-        if(mEventId != null)
-            savedInstanceState.putString(KEY_DAY_ID, mDayParent.getId().toString());
-        else{
-            savedInstanceState.putString(KEY_DETAILS, mThisEvent.getEventDetails());
-            savedInstanceState.putString(KEY_TITLE, mThisEvent.getEventTitle());
-            savedInstanceState.putString();
-        }
-
-        super.onSaveInstanceState(savedInstanceState);
-    }
-
     // Initialize widgets and their functions
     private void initWidgets(View v){
-        mNewEventTitle = v.findViewById(R.id.newEventTitle);
-        mNewEventTitle.setText(mThisEvent.getEventTitle());
-        mNewEventTitle.addTextChangedListener(new TextWatcher() {
+        mNewEventLabel = v.findViewById(R.id.newEventLabel);
+        mNewEventLabel.setText(mThisEvent.getLabel());
+        mNewEventLabel.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(mEventId == null)
-                    mThisEvent.setEventTitle(s.toString());
+
             }
 
             @Override
@@ -129,9 +141,9 @@ public class EventCreatorFragment extends Fragment {
             }
         });
 
-        mNewEventDetails = v.findViewById(R.id.newEventDetails);
-        mNewEventDetails.setText(mThisEvent.getEventDetails());
-        mNewEventDetails.addTextChangedListener(new TextWatcher() {
+        mNewEventComment = v.findViewById(R.id.newEventComment);
+        mNewEventComment.setText(mThisEvent.getComment());
+        mNewEventComment.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -139,8 +151,7 @@ public class EventCreatorFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(mEventId == null)
-                    mThisEvent.setEventDetails(s.toString());
+
             }
 
             @Override
@@ -151,7 +162,6 @@ public class EventCreatorFragment extends Fragment {
 
         mFromTimeTextView = v.findViewById(R.id.eventStartAt);
         mFromTimeTextView.setText(DateFormat.format("HH:mm", mStartCalendar.getTime()));
-        mThisEvent.scheduleEvent(Event.START_TIME_KEY, mStartCalendar.get(Calendar.HOUR_OF_DAY), mStartCalendar.get(Calendar.MINUTE));
         mFromTimeTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -160,16 +170,7 @@ public class EventCreatorFragment extends Fragment {
         });
 
         mToTimeTextView = v.findViewById(R.id.eventEndsAt);
-        if(mEventId != null){
-            Calendar endTime = Calendar.getInstance();
-            endTime.set(Calendar.HOUR_OF_DAY, mThisEvent.getEndTime()/60);
-            endTime.set(Calendar.MINUTE, mThisEvent.getEndTime()%60);
-            mToTimeTextView.setText(DateFormat.format("HH:mm", endTime.getTime()));
-        }
-        else {
-                mThisEvent.scheduleEvent(Event.END_TIME_KEY, mEndCalendar.get(Calendar.HOUR_OF_DAY) + 1,
-                        mEndCalendar.get(Calendar.MINUTE));
-        }
+        mToTimeTextView.setText(DateFormat.format("HH:mm", mEndCalendar.getTime()));
         mToTimeTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -182,33 +183,98 @@ public class EventCreatorFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if(validateInfo()) {
-                    if (mEventId != null) {
+                    mThisEvent.setLabel(mNewEventLabel.getText().toString());
+                    mThisEvent.setComment(mNewEventComment.getText().toString());
+                    mThisEvent.scheduleEvent
+                            (Event.END_TIME_KEY, mEndCalendar.get(Calendar.HOUR_OF_DAY), mEndCalendar.get(Calendar.MINUTE));
+                    mThisEvent.scheduleEvent
+                            (Event.START_TIME_KEY, mStartCalendar.get(Calendar.HOUR_OF_DAY), mStartCalendar.get(Calendar.MINUTE));
+
+                    if (mEventId == null)
+                        mDayParent.addEvent(mThisEvent);
+                    else{
                         mDayParent.removeEvent(new Event[]{mThisEvent});
-                        mDayParent.setEditedEvent(mThisEvent);
-                    } else{
-                        mThisEvent.setEventTitle(mNewEventTitle.getText().toString());
-                        mThisEvent.setEventDetails(mNewEventDetails.getText().toString());
-                        mThisEvent.scheduleEvent
-                                (Event.END_TIME_KEY, mEndCalendar.get(Calendar.HOUR_OF_DAY), mEndCalendar.get(Calendar.MINUTE));
-                        mThisEvent.scheduleEvent
-                                (Event.START_TIME_KEY, mStartCalendar.get(Calendar.HOUR_OF_DAY), mStartCalendar.get(Calendar.MINUTE));
                         mDayParent.addEvent(mThisEvent);
                     }
+
+                    sendResult();
                     getActivity().finish();
+
                 }
             }
         });
     }
 
+    public void sendResult(){
+        Intent data = new Intent();
+        data.putExtra(EX_EVENT_ID, mThisEvent.getId());
+        getActivity().setResult(Activity.RESULT_OK, data);
+    }
+
+    // Initiates TimePickerFragment with respect to the relevant time-section (FROM or TO)
+    private void onTimePicking(View v){
+        int requestCode;
+        String tag;
+        TimePickerFragment timePicker;
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+
+        if(v.getId() == R.id.eventStartAt){
+            requestCode = FROM_TIME_REQUEST_CODE;
+            tag = FROM_TIME_DIALOG_TAG;
+            timePicker = TimePickerFragment.
+                    newInstance(mStartCalendar.get(Calendar.HOUR_OF_DAY), mStartCalendar.get(Calendar.MINUTE));
+        }
+        else{
+            requestCode = TO_TIME_REQUEST_CODE;
+            tag = TO_TIME_DIALOG_TAG;
+            timePicker = TimePickerFragment.
+                    newInstance(mEndCalendar.get(Calendar.HOUR_OF_DAY), mEndCalendar.get(Calendar.MINUTE));
+        }
+
+        timePicker.setTargetFragment(EventCreatorFragment.this, requestCode);
+        timePicker.show(fragmentManager, tag);
+    }
+
+    // Handles results from dialogs etc.
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        int duration = 0;
+        if (resultCode != Activity.RESULT_OK)
+            return;
+
+        if(mEventId != null)
+            duration = mThisEvent.getEndTime() - mThisEvent.getStartTime();
+
+        switch(requestCode){
+            case TO_TIME_REQUEST_CODE: {
+                mEndCalendar.set(Calendar.HOUR_OF_DAY, data.getIntExtra(EXTRA_HOUR_OF_DAY, 0));
+                mEndCalendar.set(Calendar.MINUTE, data.getIntExtra(EXTRA_MINUTES, 0));
+
+                mToTimeTextView.setText(DateFormat.format("HH:mm", mEndCalendar.getTime()));
+            } break;
+            case FROM_TIME_REQUEST_CODE: {
+                mStartCalendar.set(Calendar.HOUR_OF_DAY, data.getIntExtra(EXTRA_HOUR_OF_DAY, 0));
+                mStartCalendar.set(Calendar.MINUTE, data.getIntExtra(EXTRA_MINUTES, 0));
+
+                // Automatically restore event-duration in case the start-time changed to be later then end-time
+                if(mStartCalendar.getTimeInMillis() > mEndCalendar.getTimeInMillis()){
+                    mEndCalendar.set(Calendar.HOUR_OF_DAY, mStartCalendar.get(Calendar.HOUR_OF_DAY) + duration/60);
+                    mEndCalendar.set(Calendar.MINUTE, mStartCalendar.get(Calendar.MINUTE) + duration%60);
+                    mToTimeTextView.setText(DateFormat.format("HH:mm", mEndCalendar.getTime()));
+                }
+
+                mFromTimeTextView.setText(DateFormat.format("HH:mm", mStartCalendar.getTime()));
+            } break;
+        }
+    }
 
     // Checks if the the necessary fields were inserted
     // and if the info does not conflict with previous activities
     private boolean validateInfo(){
-        if(mThisEvent.getEventTitle() == null) {
+        if(mNewEventLabel.getText() == null) {
             Toast.makeText(getContext(), NO_TITLE_TOAST, Toast.LENGTH_SHORT).show();
             return false;
         }
-        if(mThisEvent.getStartTime() > mThisEvent.getEndTime()) {
+        if(mEndCalendar.getTimeInMillis() < mStartCalendar.getTimeInMillis()) {
             Toast.makeText(getContext(), TIME_PARADOX_TOAST, Toast.LENGTH_LONG).show();
             return false;
         }
@@ -224,44 +290,22 @@ public class EventCreatorFragment extends Fragment {
         return true;
     }
 
-    // Initiates TimePickerFragment with respect to the relevant time-section (FROM or TO)
-    private void onTimePicking(View v){
-        int requestCode;
-        String tag;
-        if(v.getId() == R.id.eventStartAt){
-            requestCode = FROM_TIME_REQUEST_CODE;
-            tag = FROM_TIME_DIALOG_TAG;
-        }
-        else{
-            requestCode = TO_TIME_REQUEST_CODE;
-            tag = TO_TIME_DIALOG_TAG;
-        }
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState){
 
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        TimePickerFragment timePicker = TimePickerFragment.newInstance(mStartCalendar.get(Calendar.HOUR_OF_DAY), mStartCalendar.get(Calendar.MINUTE));
-        timePicker.setTargetFragment(EventCreatorFragment.this, requestCode);
-        timePicker.show(fragmentManager, tag);
+        mThisEvent.scheduleEvent(Event.START_TIME_KEY,
+                mStartCalendar.get(Calendar.HOUR_OF_DAY), mStartCalendar.get(Calendar.MINUTE));
+        mThisEvent.scheduleEvent(Event.END_TIME_KEY,
+                mEndCalendar.get(Calendar.HOUR_OF_DAY), mEndCalendar.get(Calendar.MINUTE));
+
+        savedInstanceState.putString(KEY_DAY_PARENT_ID, mDayParent.getId().toString());
+        savedInstanceState.putInt(KEY_EDITED_STARTING_TIME, mThisEvent.getStartTime());
+        savedInstanceState.putInt(KEY_EDITED_ENDING_TIME, mThisEvent.getEndTime());
+
+        if(mEventId != null)
+            savedInstanceState.putString(KEY_EVENT_ID, mThisEvent.getId().toString());
+
+        super.onSaveInstanceState(savedInstanceState);
     }
 
-    // Handles results from dialogs etc.
-    public void onActivityResult(int requestCode, int resultCode, Intent data){
-        switch(requestCode){
-            case TO_TIME_REQUEST_CODE: {
-                if(resultCode == Activity.RESULT_OK){
-                    mEndCalendar.set(Calendar.HOUR_OF_DAY, data.getIntExtra(EXTRA_HOUR_OF_DAY, 0));
-                    mEndCalendar.set(Calendar.MINUTE, data.getIntExtra(EXTRA_MINUTES, 0));
-
-                    mToTimeTextView.setText(DateFormat.format("HH:mm", mEndCalendar.getTime()));
-                }
-            } break;
-            case FROM_TIME_REQUEST_CODE: {
-                if (resultCode == Activity.RESULT_OK) {
-                    mStartCalendar.set(Calendar.HOUR_OF_DAY, data.getIntExtra(EXTRA_HOUR_OF_DAY, 0));
-                    mStartCalendar.set(Calendar.MINUTE, data.getIntExtra(EXTRA_MINUTES, 0));
-
-                    mFromTimeTextView.setText(DateFormat.format("HH:mm", mStartCalendar.getTime()));
-                }
-            } break;
-        }
-    }
 }

@@ -1,55 +1,50 @@
 package com.example.android.calednar;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.text.format.DateFormat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.LinkedList;
 import java.util.UUID;
 
 public class DayViewFragment extends Fragment {
 
-    // On-edit event extras
-    public final static String EXTRA_DAY_PARENT_ID = "dayParentId";
-    public final static String EXTRA_EVENT_ID = "eventId";
+    public static final int RC_EDIT = 0;
+    public static final int RC_ADD = 1;
+    public static final int RC_DELETE = 2;
 
     // App configuration keys
-    public final static String DAY_ID = "dayId";
-    public final static String ID_ARRAY_KEY = "idArrayKey";
+    public static final String DAY_ID = "dayId";
 
     // Widgets
-    private TextView mDateHeadline;
+    private TextView mDayHeadline;
     private FloatingActionButton fab;
-
 
     // Planned day and its activities
     private Day mDay;
-    private ArrayList<Event> mPlannedEvents;
+    private RecyclerViewAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
-        mPlannedEvents = new ArrayList<>();
-
         // Restore data after app-configuration
-        if(savedInstanceState != null && !savedInstanceState.isEmpty()) {
+        if(savedInstanceState != null && !savedInstanceState.isEmpty())
             mDay = Day.findDayById(UUID.fromString(savedInstanceState.getString(DAY_ID)));
-            String[] idArray = savedInstanceState.getStringArray(ID_ARRAY_KEY);
-            for (int i = 0; i < idArray.length; i++) {
-                mPlannedEvents.add(mDay.findEventById(UUID.fromString(idArray[i])));
-            }
-        }
         else
             mDay = new Day(Calendar.getInstance().getTime());
+
+        adapter = new RecyclerViewAdapter(getActivity(), new ArrayList<Event>(), this);
+        adapter.updateDataSet(mDay.getEvents());
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -57,30 +52,17 @@ public class DayViewFragment extends Fragment {
         super.onCreateView(inflater, parent, savedInstanceState);
 
         View v = inflater.inflate(R.layout.day_layout, parent, false);
-        LinearLayout blocksContainer = v.findViewById(R.id.eventsContainer);
+        RecyclerView eventsContainer = v.findViewById(R.id.eventsRecyclerView);
+        eventsContainer.setAdapter(adapter);
+        eventsContainer.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        // Restore view-state after app configuration
-        if(savedInstanceState != null){
-            for(Event event : mPlannedEvents){
-                blocksContainer.addView(setupBlockView(event));
-            }
-        }
         initWidgets(v);
         return v;
     }
 
-
     // Save necessary data upon app configuration
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState){
-        String[] idArray = new String[mPlannedEvents.size()];
-        LinearLayout eventsContainer = getView().findViewById(R.id.eventsContainer);
-        TextView idHolder;
-        for(int i=0; i<eventsContainer.getChildCount(); i++){
-            idHolder = eventsContainer.getChildAt(i).findViewById(R.id.idHolder);
-            idArray[i] = idHolder.getText().toString();
-        }
-        savedInstanceState.putStringArray(ID_ARRAY_KEY, idArray);
         savedInstanceState.putString(DAY_ID, mDay.getId().toString());
 
         super.onSaveInstanceState(savedInstanceState);
@@ -89,137 +71,43 @@ public class DayViewFragment extends Fragment {
     // Initialize widgets and their functions
     private void initWidgets(View v){
 
-        mDateHeadline = v.findViewById(R.id.dateHeadline);
-        mDateHeadline.setText(mDay.getDate());
+        mDayHeadline = v.findViewById(R.id.dayHeadline);
+        mDayHeadline.setText(mDay.getDate());
 
         fab = v.findViewById(R.id.fabulousFab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(), EventCreatorActivity.class);
-                intent.putExtra(EXTRA_DAY_PARENT_ID, mDay.getId());
-                startActivity(intent);
+                Intent intent = new Intent(getContext().getApplicationContext(), EventCreatorActivity.class);
+                intent.putExtra(RecyclerViewAdapter.EX_DAY_ID, mDay.getId());
+                startActivityForResult(intent, RC_ADD);
             }
         });
     }
 
     @Override
-    public void onResume(){
-        super.onResume();
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
 
-        // Determine whatever a new event was add, or one was edited
-        if((mPlannedEvents.isEmpty() &&  !mDay.getEvents().isEmpty()) ||
-                mDay.getEvents().size() != mPlannedEvents.size()) {
-            if(mDay.getEvents().size() < mPlannedEvents.size()) {
-                mDay.addEvent(mDay.getEditedEvent());
-                editEventBlock(mDay.getEditedEvent());
-            }
-            else
-                addNewEvent();
+        if(resultCode != Activity.RESULT_OK)
+            return;
+
+        UUID eventId = (UUID)data.getSerializableExtra(EventCreatorFragment.EX_EVENT_ID);
+        Event event = mDay.findEventById(eventId);
+
+        switch (requestCode){
+            case RC_EDIT:{
+                int previousPosition = adapter.getPreviousPosition(eventId);
+                int currentPosition = mDay.getIndex(event);
+                adapter.updateDataSet(mDay.getEvents());
+                if(previousPosition != currentPosition)
+                    adapter.notifyItemMoved(previousPosition, mDay.getIndex(event));
+                adapter.notifyItemChanged(currentPosition);
+            } break;
+            case RC_ADD:{
+                adapter.updateDataSet(mDay.getEvents());
+                adapter.notifyItemInserted(mDay.getIndex(event));
+            } break;
         }
-    }
-
-    // Adds a new event, both to the model and the view
-    private void addNewEvent(){
-        int eventIndex;
-
-        mPlannedEvents.add(mDay.getEvents().get(mDay.getEvents().size()-1));
-        Event newEvent = mDay.getEvents().get(mDay.getEvents().size()-1);
-        LinearLayout blocksContainer = getView().findViewById(R.id.eventsContainer);
-        eventIndex = mDay.getIndex(newEvent);
-
-        View viewItem = setupBlockView(newEvent);
-
-        if(eventIndex != mDay.getEvents().size()-1)
-            insertBlock(blocksContainer, eventIndex, viewItem);
-        else
-            blocksContainer.addView(viewItem);
-    }
-
-    // Change an existing event data. If requires, change the layout to fit the new scheduling
-    private void editEventBlock(Event editedEvent){
-
-        int eventIndex;
-        TextView textView;
-
-        eventIndex = mDay.getIndex(editedEvent);
-        LinearLayout blocksContainer = getView().findViewById(R.id.eventsContainer);
-        View eventBlock = blocksContainer.getChildAt(eventIndex);
-        View currentActivitySpot = null;
-
-        textView = eventBlock.findViewById(R.id.idHolder);
-        if(UUID.fromString(textView.getText().toString()).compareTo(editedEvent.getId()) != 0){
-            for(int i=0; i<blocksContainer.getChildCount(); i++){
-                textView = blocksContainer.getChildAt(i).findViewById(R.id.idHolder);
-                if(UUID.fromString(textView.getText().toString()).compareTo(editedEvent.getId()) == 0){
-                    currentActivitySpot = blocksContainer.getChildAt(i);
-                    blocksContainer.removeViewAt(i);
-                    break;
-                }
-            }
-            insertBlock(blocksContainer, eventIndex, currentActivitySpot);
-        }
-
-        eventBlock = blocksContainer.getChildAt(eventIndex);
-        textView = eventBlock.findViewById(R.id.eventBlockTitle);
-        textView.setText(editedEvent.getEventTitle());
-
-        textView = eventBlock.findViewById(R.id.eventBlockDetails);
-        textView.setText(editedEvent.getEventDetails());
-
-        textView = eventBlock.findViewById(R.id.eventBlockStartingTime);
-        textView.setText(DateFormat.format("HH:mm", editedEvent.getTime()));
-
-        textView = eventBlock.findViewById(R.id.eventBlockDuration);
-        textView.setText(editedEvent.getDuration(getContext()));
-
-    }
-
-    // Take an event and creates its event-block view
-    private View setupBlockView(Event event){
-        View viewItem = getLayoutInflater().inflate(R.layout.event_block_layout, null);
-        TextView textView = viewItem.findViewById(R.id.eventBlockTitle);
-        textView.setText(event.getEventTitle());
-
-        textView = viewItem.findViewById(R.id.eventBlockDetails);
-        textView.setText(event.getEventDetails());
-
-        textView = viewItem.findViewById(R.id.eventBlockStartingTime);
-        textView.setText(DateFormat.format("HH:mm", event.getTime()));
-
-        textView = viewItem.findViewById(R.id.eventBlockDuration);
-        textView.setText(event.getDuration(getContext()));
-
-        textView = viewItem.findViewById(R.id.idHolder);
-        textView.setText(event.getId().toString());
-
-        viewItem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TextView idHolder = v.findViewById(R.id.idHolder);
-                UUID id = UUID.fromString(idHolder.getText().toString());
-
-                Intent intent = new Intent(getContext(), EventCreatorActivity.class);
-                intent.putExtra(EXTRA_DAY_PARENT_ID, mDay.getId());
-                intent.putExtra(EXTRA_EVENT_ID, id);
-
-                startActivity(intent);
-            }
-        });
-        return viewItem;
-    }
-
-    // Insert an event-block view in a given index, and adjusting the entire view accordingly
-    private void insertBlock(LinearLayout blocksContainer, int insertAt, View block){
-        LinkedList<View> removedViews = new LinkedList<>();
-        while(blocksContainer.getChildAt(insertAt) != null){
-            removedViews.add(blocksContainer.getChildAt(insertAt));
-            blocksContainer.removeViewAt(insertAt);
-        }
-
-        blocksContainer.addView(block);
-
-        while(!removedViews.isEmpty())
-            blocksContainer.addView(removedViews.removeFirst());
     }
 }
