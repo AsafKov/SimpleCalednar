@@ -6,17 +6,18 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/overrideDetails"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/overrideDialogMessage"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:layout_marginStart="8dp"
+        android:text="@string/overwriteDialogMessage"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
     <TextView
         android:id="@+id/overrideProgression"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/overrideDialogProgression"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:layout_marginStart="8dp"
+        android:text="@string/overwriteDialogProgression"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
 </LinearLayout>

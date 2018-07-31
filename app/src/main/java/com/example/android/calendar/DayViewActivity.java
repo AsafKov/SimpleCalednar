@@ -1,13 +1,19 @@
-package com.example.android.calednar;
+package com.example.android.calendar;
+
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.widget.Toolbar;
 
-public class EventCreatorActivity extends SingleFragmentActivity {
+public class DayViewActivity extends SingleFragmentActivity {
+
+    protected Fragment createFragment(){
+        return new DayViewFragment();
+    }
 
     @Override
-    protected Fragment createFragment(){
-        return new EventCreatorFragment();
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.example.android.calednar;
+package com.example.android.calendar;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -13,18 +13,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
+
 import java.util.Calendar;
 import java.util.UUID;
 
 public class EventCreatorFragment extends Fragment {
 
     public static final String EX_EVENT_ID = "extraEventId";
+    public static final String EX_PREFORMED_OVERWRITE = "preformedOverwrite";
 
     // Toasts
-    private static final String NO_TITLE_TOAST = "Please choose label";
-    private static final String TIME_PARADOX_TOAST = "Your activity starts after it ends. " +
+    private static final String TIME_PARADOX_TOAST = "Your event starts after it ends. " +
             "Please deliver your time machine to the nearest police station";
 
     // App configuration keys
@@ -41,22 +41,25 @@ public class EventCreatorFragment extends Fragment {
     public static final String EXTRA_HOUR_OF_DAY = "hourOfDay";
     public static final String EXTRA_MINUTES = "minutes";
 
-    // OverrideDialog tags and code
-    public static final String OVERRIDE_DIALOG_TAG = "overrideDialogTag";
-    public static final int OVERRIDE_DIALOG_REQUEST = 2;
+    // OverwriteDialog tags and code
+    public static final String OVERWRITE_DIALOG_TAG = "overrideDialogTag";
+    public static final int OVERWRITE_DIALOG_REQUEST = 2;
+
+    public static final String TAG_LABEL_PICKER = "labelPickerDialog";
+    private static final int RQ_LABEL_PICKER = 3;
 
     // Widgets
-    private EditText mNewEventLabel, mNewEventComment;
-    private TextView mFromTimeTextView, mToTimeTextView;
-    private Button mSaveButton;
+    private EditText mNewEventComment;
+    private Button mSaveButton, mNewEventLabel, mFromTimeButton, mToTimeButton;
 
     private Day mDayParent;
     private Calendar mStartCalendar = Calendar.getInstance();
     private Calendar mEndCalendar = Calendar.getInstance();
 
     private Event mThisEvent;
-    private NotificationPublisher notificationPublisher = new NotificationPublisher();
     private UUID mEventId; // If an event is being edited, rather than a new one being created
+    private boolean preformedOverwrite = false;
+    private NotificationPublisher notificationPublisher = new NotificationPublisher();
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -86,7 +89,7 @@ public class EventCreatorFragment extends Fragment {
 
     private void adjustCalendars(Bundle savedInstanceState){
         int startingTime = 0;
-        int endingTime = 60;
+        int endingTime = 0;
         Event previousEvent;
         if(savedInstanceState != null && !savedInstanceState.isEmpty()){
             startingTime = savedInstanceState.getInt(KEY_EDITED_STARTING_TIME);
@@ -101,12 +104,13 @@ public class EventCreatorFragment extends Fragment {
                 previousEvent = mDayParent.getLastOnDay();
                 if(previousEvent != null){
                     startingTime = previousEvent.getEndTime();
-                    endingTime = startingTime + 60;
+                    mStartCalendar.set(Calendar.HOUR_OF_DAY, (startingTime/60)%24);
+                    mStartCalendar.set(Calendar.MINUTE, startingTime%60);
+                    resetUntilNextEvent();
                 }
             }
         }
-
-        mStartCalendar.set(Calendar.HOUR_OF_DAY, startingTime/60);
+        mStartCalendar.set(Calendar.HOUR_OF_DAY, (startingTime/60)%24);
         mStartCalendar.set(Calendar.MINUTE, startingTime%60);
         mEndCalendar.set(Calendar.HOUR_OF_DAY, endingTime/60);
         mEndCalendar.set(Calendar.MINUTE, endingTime%60);
@@ -115,29 +119,24 @@ public class EventCreatorFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState){
         View v = inflater.inflate(R.layout.event_creator_layout, parent, false);
-        initWidgets(v);
 
+        getActivity().setTitle(R.string.eventCreatorTitle);
+        initWidgets(v);
         return v;
     }
 
     // Initialize widgets and their functions
     private void initWidgets(View v){
+
         mNewEventLabel = v.findViewById(R.id.newEventLabel);
         mNewEventLabel.setText(mThisEvent.getLabel());
-        mNewEventLabel.addTextChangedListener(new TextWatcher() {
+        mNewEventLabel.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
+            public void onClick(View v) {
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                LabelPickerDialog labelPickerDialog = new LabelPickerDialog();
+                labelPickerDialog.setTargetFragment(EventCreatorFragment.this, RQ_LABEL_PICKER);
+                labelPickerDialog.show(fragmentManager, TAG_LABEL_PICKER);
             }
         });
 
@@ -160,18 +159,19 @@ public class EventCreatorFragment extends Fragment {
             }
         });
 
-        mFromTimeTextView = v.findViewById(R.id.eventStartAt);
-        mFromTimeTextView.setText(DateFormat.format("HH:mm", mStartCalendar.getTime()));
-        mFromTimeTextView.setOnClickListener(new View.OnClickListener() {
+        mFromTimeButton = v.findViewById(R.id.eventStartAt);
+        mFromTimeButton.setText(DateFormat.format("HH:mm", mStartCalendar.getTime()));
+        mFromTimeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onTimePicking(v);
             }
         });
 
-        mToTimeTextView = v.findViewById(R.id.eventEndsAt);
-        mToTimeTextView.setText(DateFormat.format("HH:mm", mEndCalendar.getTime()));
-        mToTimeTextView.setOnClickListener(new View.OnClickListener() {
+        mToTimeButton = v.findViewById(R.id.eventEndsAt);
+        if(mEventId != null)
+            mToTimeButton.setText(DateFormat.format("HH:mm", mEndCalendar.getTime()));
+        mToTimeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onTimePicking(v);
@@ -186,14 +186,17 @@ public class EventCreatorFragment extends Fragment {
                     mThisEvent.setLabel(mNewEventLabel.getText().toString());
                     mThisEvent.setComment(mNewEventComment.getText().toString());
                     mThisEvent.scheduleEvent
-                            (Event.END_TIME_KEY, mEndCalendar.get(Calendar.HOUR_OF_DAY), mEndCalendar.get(Calendar.MINUTE));
-                    mThisEvent.scheduleEvent
                             (Event.START_TIME_KEY, mStartCalendar.get(Calendar.HOUR_OF_DAY), mStartCalendar.get(Calendar.MINUTE));
+                    if(mToTimeButton.getText().equals(getString(R.string.untilNextEvent)))
+                        mThisEvent.setUntilNextEvent(mDayParent.findNextEvent(mThisEvent.getStartTime()));
+                    else
+                        mThisEvent.scheduleEvent
+                                (Event.END_TIME_KEY, mEndCalendar.get(Calendar.HOUR_OF_DAY), mEndCalendar.get(Calendar.MINUTE));
 
                     if (mEventId == null)
                         mDayParent.addEvent(mThisEvent);
                     else{
-                        mDayParent.removeEvent(new Event[]{mThisEvent});
+                        mDayParent.removeEvent(mThisEvent);
                         mDayParent.addEvent(mThisEvent);
                     }
 
@@ -208,6 +211,7 @@ public class EventCreatorFragment extends Fragment {
     public void sendResult(){
         Intent data = new Intent();
         data.putExtra(EX_EVENT_ID, mThisEvent.getId());
+        data.putExtra(EX_PREFORMED_OVERWRITE, preformedOverwrite);
         getActivity().setResult(Activity.RESULT_OK, data);
     }
 
@@ -235,55 +239,62 @@ public class EventCreatorFragment extends Fragment {
         timePicker.show(fragmentManager, tag);
     }
 
+
+    // When on Until Next Event option, reset the end time according to the changes in the start time
+    private void resetUntilNextEvent(){
+        int startTime = mStartCalendar.get(Calendar.HOUR_OF_DAY)*60 + mStartCalendar.get(Calendar.MINUTE);
+        Event event = mDayParent.findNextEvent(startTime);
+        int endTime = event == null? (24*60)-1:event.getStartTime();
+        mEndCalendar.set(Calendar.HOUR_OF_DAY, endTime/60);
+        mEndCalendar.set(Calendar.MINUTE, endTime%60);
+    }
+
     // Handles results from dialogs etc.
     public void onActivityResult(int requestCode, int resultCode, Intent data){
-        int duration = 0;
+
         if (resultCode != Activity.RESULT_OK)
             return;
-
-        if(mEventId != null)
-            duration = mThisEvent.getEndTime() - mThisEvent.getStartTime();
-
         switch(requestCode){
             case TO_TIME_REQUEST_CODE: {
                 mEndCalendar.set(Calendar.HOUR_OF_DAY, data.getIntExtra(EXTRA_HOUR_OF_DAY, 0));
                 mEndCalendar.set(Calendar.MINUTE, data.getIntExtra(EXTRA_MINUTES, 0));
 
-                mToTimeTextView.setText(DateFormat.format("HH:mm", mEndCalendar.getTime()));
+                mToTimeButton.setText(DateFormat.format("HH:mm", mEndCalendar.getTime()));
             } break;
             case FROM_TIME_REQUEST_CODE: {
                 mStartCalendar.set(Calendar.HOUR_OF_DAY, data.getIntExtra(EXTRA_HOUR_OF_DAY, 0));
                 mStartCalendar.set(Calendar.MINUTE, data.getIntExtra(EXTRA_MINUTES, 0));
+                mFromTimeButton.setText(DateFormat.format("HH:mm", mStartCalendar.getTime()));
 
-                // Automatically restore event-duration in case the start-time changed to be later then end-time
-                if(mStartCalendar.getTimeInMillis() > mEndCalendar.getTimeInMillis()){
-                    mEndCalendar.set(Calendar.HOUR_OF_DAY, mStartCalendar.get(Calendar.HOUR_OF_DAY) + duration/60);
-                    mEndCalendar.set(Calendar.MINUTE, mStartCalendar.get(Calendar.MINUTE) + duration%60);
-                    mToTimeTextView.setText(DateFormat.format("HH:mm", mEndCalendar.getTime()));
-                }
-
-                mFromTimeTextView.setText(DateFormat.format("HH:mm", mStartCalendar.getTime()));
+                if(mToTimeButton.getText().equals(getString(R.string.untilNextEvent)))
+                    resetUntilNextEvent();
+            } break;
+            case RQ_LABEL_PICKER: {
+                mNewEventLabel.setText(data.getStringExtra(LabelPickerDialog.EX_LABEL));
+            } break;
+            case OVERWRITE_DIALOG_REQUEST: {
+                int startTime = mStartCalendar.get(Calendar.HOUR_OF_DAY)*60 + mStartCalendar.get(Calendar.MINUTE);
+                int endTime = mEndCalendar.get(Calendar.HOUR_OF_DAY)*60 + mEndCalendar.get(Calendar.MINUTE);
+                mDayParent.overwrite(startTime, endTime);
+                preformedOverwrite = true;
+                mSaveButton.callOnClick();
             } break;
         }
     }
 
     // Checks if the the necessary fields were inserted
-    // and if the info does not conflict with previous activities
+    // and if the info does not conflict with previously created activities
     private boolean validateInfo(){
-        if(mNewEventLabel.getText() == null) {
-            Toast.makeText(getContext(), NO_TITLE_TOAST, Toast.LENGTH_SHORT).show();
-            return false;
-        }
         if(mEndCalendar.getTimeInMillis() < mStartCalendar.getTimeInMillis()) {
             Toast.makeText(getContext(), TIME_PARADOX_TOAST, Toast.LENGTH_LONG).show();
             return false;
         }
-        Event intersEvent = mDayParent.findIntersection(mThisEvent);
-        if(intersEvent != null){
+
+        if(mDayParent.findIntersection(mStartCalendar, mEndCalendar, mThisEvent.getId())){
             FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-            OverrideDialog dialog = new OverrideDialog();
-            dialog.setTargetFragment(EventCreatorFragment.this, OVERRIDE_DIALOG_REQUEST);
-            dialog.show(fragmentManager, OVERRIDE_DIALOG_TAG);
+            OverwriteDialog dialog = new OverwriteDialog();
+            dialog.setTargetFragment(EventCreatorFragment.this, OVERWRITE_DIALOG_REQUEST);
+            dialog.show(fragmentManager, OVERWRITE_DIALOG_TAG);
             return false;
         }
 

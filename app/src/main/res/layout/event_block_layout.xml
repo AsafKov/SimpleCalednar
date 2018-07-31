@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/singleEventBlock"
-    android:layout_width="match_parent"
+    android:layout_width="400dp"
     android:layout_height="wrap_content"
     android:background="@color/eventBlockBackground"
+    android:clickable="true"
     android:orientation="vertical"
-    android:clickable="true">
+    android:paddingBottom="8dp"
+    android:paddingEnd="8dp"
+    android:paddingStart="8dp"
+    android:paddingTop="8dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -55,7 +59,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/border"
             android:padding="4dp"
-            android:text="@string/eventComment"
+            android:text="@string/eventCommentTextView"
             android:textAppearance="@style/TextAppearance.AppCompat" />
 
     </LinearLayout>

@@ -1,16 +1,22 @@
-package com.example.android.calednar;
+package com.example.android.calendar;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.Toast;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.UUID;
@@ -25,7 +31,6 @@ public class DayViewFragment extends Fragment {
     public static final String DAY_ID = "dayId";
 
     // Widgets
-    private TextView mDayHeadline;
     private FloatingActionButton fab;
 
     // Planned day and its activities
@@ -44,19 +49,21 @@ public class DayViewFragment extends Fragment {
 
         adapter = new RecyclerViewAdapter(getActivity(), new ArrayList<Event>(), this);
         adapter.updateDataSet(mDay.getEvents());
-        adapter.notifyDataSetChanged();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState){
         super.onCreateView(inflater, parent, savedInstanceState);
-
         View v = inflater.inflate(R.layout.day_layout, parent, false);
+
         RecyclerView eventsContainer = v.findViewById(R.id.eventsRecyclerView);
+        registerForContextMenu(eventsContainer);
         eventsContainer.setAdapter(adapter);
         eventsContainer.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        getActivity().setTitle(mDay.getDate());
         initWidgets(v);
+        setHasOptionsMenu(true);
         return v;
     }
 
@@ -71,9 +78,6 @@ public class DayViewFragment extends Fragment {
     // Initialize widgets and their functions
     private void initWidgets(View v){
 
-        mDayHeadline = v.findViewById(R.id.dayHeadline);
-        mDayHeadline.setText(mDay.getDate());
-
         fab = v.findViewById(R.id.fabulousFab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,6 +90,32 @@ public class DayViewFragment extends Fragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater){
+        super.onCreateOptionsMenu(menu, menuInflater);
+        menuInflater.inflate(R.menu.menu_main, menu);
+        menu.add(mDay.getDate());
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem){
+        switch (menuItem.getItemId()){
+            case R.id.deleteEventMenuItem:{
+                ArrayList<Event> pressedEvents = adapter.getPressedItems();
+                if(pressedEvents.isEmpty()){
+                    Toast.makeText(getContext(), R.string.noEventsChosenToast, Toast.LENGTH_LONG).show();
+                    return true;
+                }
+                mDay.removeEvents(pressedEvents);
+                adapter.onItemsRemoved();
+                adapter.updateDataSet(mDay.getEvents());
+                adapter.notifyDataSetChanged();
+            }
+        }
+
+        return super.onOptionsItemSelected(menuItem);
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -93,20 +123,26 @@ public class DayViewFragment extends Fragment {
             return;
 
         UUID eventId = (UUID)data.getSerializableExtra(EventCreatorFragment.EX_EVENT_ID);
+        boolean preformedOverwrite = data.getBooleanExtra(EventCreatorFragment.EX_PREFORMED_OVERWRITE, false);
         Event event = mDay.findEventById(eventId);
 
         switch (requestCode){
             case RC_EDIT:{
-                int previousPosition = adapter.getPreviousPosition(eventId);
                 int currentPosition = mDay.getIndex(event);
+                int previousPosition = adapter.getPreviousPosition(eventId);
                 adapter.updateDataSet(mDay.getEvents());
-                if(previousPosition != currentPosition)
+                if(previousPosition != currentPosition && !preformedOverwrite)
                     adapter.notifyItemMoved(previousPosition, mDay.getIndex(event));
+                else
+                    adapter.notifyDataSetChanged();
                 adapter.notifyItemChanged(currentPosition);
             } break;
             case RC_ADD:{
                 adapter.updateDataSet(mDay.getEvents());
-                adapter.notifyItemInserted(mDay.getIndex(event));
+                if(!preformedOverwrite)
+                    adapter.notifyItemInserted(mDay.getIndex(event));
+                else
+                    adapter.notifyDataSetChanged();
             } break;
         }
     }

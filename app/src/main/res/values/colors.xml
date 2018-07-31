@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-
     <color name="separatorColor">#49492dd6</color>
 
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#0c105b</color>
-    <color name="colorBackground">#2c424548</color>
-    <color name="eventBlockBackground">#2299aec4</color>
+    <color name="colorPrimary">#0d0685</color>
+    <color name="colorPrimaryDark">#cd0e0e33</color>
+    <color name="colorAccent">#e44a587a</color>
+
+    <color name="colorBackground">#dfe1e3e9</color>
+    <color name="eventBlockBackground">#22535f6b</color>
+    <color name="eventBlockBackgroundOnPressed">#361d1f22</color>
+    <color name="labelPickerDialogHeadlineBackground">#c9167609</color>
     <color name="transparent">#00ffffff</color>
     <color name="headlineTextColor">#d7ffffff</color>
 </resources>

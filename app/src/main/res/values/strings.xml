@@ -1,23 +1,36 @@
 <resources>
 
-    // activity_creator strings:
+    // OverwriteDialog
+    <string name="overwriteOption">OVERWRITE</string>
+    <string name="resumeEditingOption">RESUME EDITING</string>
+    <string name="overwriteDialogMessage">Your event overwrites previously created events</string>
+    <string name="overwriteDialogProgression">Proceed anyway?</string>
+
+    // LabelPickerDialog
+    <string name="labelPickerHeadline">Labels:</string>
+
+    // EventCreator
     <string name="eventLabelHint">Event Label</string>
-    <string name="eventComment">Comment</string>
-    <string name="bankCheckBox">Bank event</string>
-    <string name="untilNextEvent">Until next event</string>
+    <string name="eventCommentHint">Location, notes, reminders&#8230;</string>
+    <string name="eventLabelTextView">Label:</string>
+    <string name="eventCommentTextView">&#160;Comment:</string>
+    <string name="eventTimeTextView">Time:</string>
+    <string name="eventDetailsTextView">Details:</string>
     <string name="startTextView">Start:</string>
     <string name="endTextView">End:</string>
+    <string name="defaultLabel">Break</string> // To avoid warnings
+    <string name="defaultTimeDisplay">00:00</string> // To avoid warnings
+    <string name="untilNextEvent">Until next event</string>
     <string name="save">SAVE</string>
+    <string name="eventCreatorTitle">Event Editor</string>
 
     // general
     <string name="okButton">OK</string>
-    <string name="overrideOption">OVERRIDE</string>
-    <string name="resumeEditingOption">RESUME EDITING</string>
-    <string name="overrideDialogMessage">This event overrides previous events</string>
-    <string name="overrideDialogProgression">How would you like to continue?</string>
 
+    // DayViewFragment
+    <string name="noEventsChosenToast">No events were chosen</string>
+    <string name="contextMenuDelete">deleteEventsIcon</string>
     <string name="durationHours">%dh\u0020</string>
     <string name="durationMinutes">%dmin</string>
-    <string name="reminderButton"><![CDATA[Alarm&Notification Button]]></string>
 
 </resources>

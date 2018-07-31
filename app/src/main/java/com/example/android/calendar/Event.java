@@ -1,4 +1,4 @@
-package com.example.android.calednar;
+package com.example.android.calendar;
 
 import android.content.Context;
 
@@ -8,6 +8,10 @@ import java.util.Date;
 import java.util.UUID;
 
 public class Event{
+
+    public static final String[] mLabelsTypes = new String[]{"Social Event", "Training", "Eating", "Sleeping",
+            "Reading", "Studying", "Break", "Traveling", "Housework", "Schoolwork", "Internet", "T.V", "Working",
+            "Hobby"};
 
     public final static int START_TIME_KEY = 1;
     public final static int END_TIME_KEY = 2;
@@ -23,6 +27,7 @@ public class Event{
     public Event(Day dayParent){
         mId = UUID.randomUUID();
         mDayParent = dayParent;
+        mLabel = "Break";
     }
 
     public Event clone(){
@@ -33,7 +38,6 @@ public class Event{
         return cloneEvent;
     }
 
-
     public void scheduleEvent(int timeKey, int hourOfDay, int minute){
         if(timeKey == START_TIME_KEY) {
             if(hourOfDay == 24)
@@ -42,12 +46,20 @@ public class Event{
         }
 
         if(timeKey == END_TIME_KEY) {
+            if(hourOfDay*60 + minute < mStartAtMinuteInDay || minute == 0)
             if(hourOfDay == 0)
                 hourOfDay = 24;
             if(hourOfDay == 24)
                 minute = 0;
             this.mEndAtMinuteInDay = hourOfDay * 60 + minute;
         }
+    }
+
+    public void setUntilNextEvent(Event event){
+        if(event == null)
+            mEndAtMinuteInDay = (60*24)-1;
+        else
+            mEndAtMinuteInDay = event.getStartTime();
     }
 
     public String getDurationInFormat(Context context){
@@ -65,6 +77,14 @@ public class Event{
     }
 
     public int getStartTime(){ return this.mStartAtMinuteInDay; }
+
+    public void setStartTime(int startTime){
+        this.mStartAtMinuteInDay = startTime;
+    }
+
+    public void setEndTime(int endTime){
+        this.mEndAtMinuteInDay = endTime;
+    }
 
     public int getEndTime(){ return this.mEndAtMinuteInDay; }
 

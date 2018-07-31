@@ -3,28 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorBackground">
-
+    android:theme="@style/AppTheme">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/dayHeadline"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:background="@color/colorPrimary"
-            android:textColor="@color/headlineTextColor"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:textSize="18sp" />
+        android:orientation="vertical"
+        android:gravity="center_horizontal" >
 
         <android.support.v7.widget.RecyclerView
-            android:id = "@+id/eventsRecyclerView"
-            android:layout_width="match_parent"
+            android:id="@+id/eventsRecyclerView"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingTop="24dp"
             android:scrollbars="vertical" />
 
     </LinearLayout>
