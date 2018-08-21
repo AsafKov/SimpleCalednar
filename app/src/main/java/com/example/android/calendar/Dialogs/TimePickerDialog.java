@@ -1,4 +1,4 @@
-package com.example.android.calendar;
+package com.example.android.calendar.Dialogs;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -10,7 +10,10 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.TimePicker;
 
-public class TimePickerFragment extends DialogFragment {
+import com.example.android.calendar.Fragments.EventCreatorFragment;
+import com.example.android.calendar.R;
+
+public class TimePickerDialog extends DialogFragment {
 
     private int mHourOfDay, mMinutes;
 
@@ -52,12 +55,12 @@ public class TimePickerFragment extends DialogFragment {
         getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
     }
 
-    public static TimePickerFragment newInstance(int mHourOfDay, int mMinutes){
+    public static TimePickerDialog newInstance(int mHourOfDay, int mMinutes){
         Bundle bundle = new Bundle();
         bundle.putSerializable(EventCreatorFragment.EXTRA_HOUR_OF_DAY, mHourOfDay);
         bundle.putSerializable(EventCreatorFragment.EXTRA_MINUTES, mMinutes);
 
-        TimePickerFragment timePicker = new TimePickerFragment();
+        TimePickerDialog timePicker = new TimePickerDialog();
         timePicker.setArguments(bundle);
         return timePicker;
     }

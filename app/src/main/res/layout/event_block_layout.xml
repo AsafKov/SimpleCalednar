@@ -3,7 +3,6 @@
     android:id="@+id/singleEventBlock"
     android:layout_width="400dp"
     android:layout_height="wrap_content"
-    android:background="@color/eventBlockBackground"
     android:clickable="true"
     android:orientation="vertical"
     android:paddingBottom="8dp"

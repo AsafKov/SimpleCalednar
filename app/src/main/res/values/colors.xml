@@ -6,9 +6,22 @@
     <color name="colorPrimaryDark">#cd0e0e33</color>
     <color name="colorAccent">#e44a587a</color>
 
-    <color name="colorBackground">#dfe1e3e9</color>
-    <color name="eventBlockBackground">#22535f6b</color>
-    <color name="eventBlockBackgroundOnPressed">#361d1f22</color>
+    <color name="colorBackground">#5bb7bac0</color>
+    <color name="eventBlockBackgroundDefault">#32535f6b</color>
+    <color name="eventBlockBackgroundDefaultOnPressed">#4b1d1f22</color>
+    <color name="eventBlockBackgroundRed">#64e20834</color>
+    <color name="eventBlockBackgroundRedOnPressed">#96a20222</color>
+    <color name="eventBlockBackgroundGreen">#6408e213</color>
+    <color name="eventBlockBackgroundGreenOnPressed">#9602a20d</color>
+    <color name="eventBlockBackgroundBlue">#640817e2</color>
+    <color name="eventBlockBackgroundBlueOnPressed">#96020aa2</color>
+    <color name="eventBlockBackgroundYellow">#64dbe208</color>
+    <color name="eventBlockBackgroundYellowOnPressed">#969fa202</color>
+    <color name="eventBlockBackgroundPink">#64e208d3</color>
+    <color name="eventBlockBackgroundPinkOnPressed">#96a20287</color>
+    <color name="eventBlockBackgroundOrange">#64e24908</color>
+    <color name="eventBlockBackgroundOrangeOnPressed">#96a23202</color>
+
     <color name="labelPickerDialogHeadlineBackground">#c9167609</color>
     <color name="transparent">#00ffffff</color>
     <color name="headlineTextColor">#d7ffffff</color>

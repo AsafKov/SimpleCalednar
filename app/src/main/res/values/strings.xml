@@ -17,7 +17,9 @@
     <string name="eventTimeTextView">Time:</string>
     <string name="eventDetailsTextView">Details:</string>
     <string name="startTextView">Start:</string>
+    <string name="colorTextView">Color:</string>
     <string name="endTextView">End:</string>
+    <string name="settingsTextView">Settings:</string>
     <string name="defaultLabel">Break</string> // To avoid warnings
     <string name="defaultTimeDisplay">00:00</string> // To avoid warnings
     <string name="untilNextEvent">Until next event</string>

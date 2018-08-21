@@ -9,15 +9,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <receiver android:name=".NotificationPublisher" />
-        <activity android:name=".DayViewActivity">
+        <activity android:name=".Activities.CalendarActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".EventCreatorActivity">
+        <activity android:name=".Activities.EventCreatorActivity">
+
+        </activity>
+        <activity android:name=".Activities.DayViewActivity">
 
         </activity>
     </application>

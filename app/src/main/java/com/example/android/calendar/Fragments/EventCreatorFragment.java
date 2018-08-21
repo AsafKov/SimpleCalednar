@@ -1,10 +1,15 @@
-package com.example.android.calendar;
+package com.example.android.calendar.Fragments;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
@@ -13,8 +18,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Toast;
-
+import com.example.android.calendar.Dialogs.LabelPickerDialog;
+import com.example.android.calendar.Dialogs.OverwriteDialog;
+import com.example.android.calendar.Dialogs.TimePickerDialog;
+import com.example.android.calendar.Model.Day;
+import com.example.android.calendar.Model.Event;
+import com.example.android.calendar.R;
+import com.example.android.calendar.Helpers.RecyclerViewAdapter;
 import java.util.Calendar;
 import java.util.UUID;
 
@@ -51,20 +64,20 @@ public class EventCreatorFragment extends Fragment {
     // Widgets
     private EditText mNewEventComment;
     private Button mSaveButton, mNewEventLabel, mFromTimeButton, mToTimeButton;
+    private ActionBar mActionBar;
 
     private Day mDayParent;
     private Calendar mStartCalendar = Calendar.getInstance();
     private Calendar mEndCalendar = Calendar.getInstance();
+    private int[] mBlockColorScheme = new int[2];
 
     private Event mThisEvent;
     private UUID mEventId; // If an event is being edited, rather than a new one being created
     private boolean preformedOverwrite = false;
-    private NotificationPublisher notificationPublisher = new NotificationPublisher();
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-
 
         if(savedInstanceState != null && !savedInstanceState.isEmpty()){
             mDayParent = Day.findDayById(UUID.fromString(savedInstanceState.getString(KEY_DAY_PARENT_ID)));
@@ -106,7 +119,7 @@ public class EventCreatorFragment extends Fragment {
                     startingTime = previousEvent.getEndTime();
                     mStartCalendar.set(Calendar.HOUR_OF_DAY, (startingTime/60)%24);
                     mStartCalendar.set(Calendar.MINUTE, startingTime%60);
-                    resetUntilNextEvent();
+                    endingTime = resetUntilNextEvent();
                 }
             }
         }
@@ -127,6 +140,20 @@ public class EventCreatorFragment extends Fragment {
 
     // Initialize widgets and their functions
     private void initWidgets(View v){
+        mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        int colorId = R.color.eventBlockBackgroundDefault;
+        if(mEventId != null) {
+            mBlockColorScheme = mThisEvent.getBlockColorScheme();
+            colorId = mBlockColorScheme[0];
+        }
+        else{
+            mBlockColorScheme[0] = R.color.eventBlockBackgroundDefault;
+            mBlockColorScheme[1] = R.color.eventBlockBackgroundDefaultOnPressed;
+        }
+        Color color = Color.valueOf(getResources().getColor(colorId, getContext().getTheme()));
+        color = Color.valueOf(color.red(), color.green(), color.blue(), 1);
+        mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        mActionBar.setBackgroundDrawable(new ColorDrawable(color.toArgb()));
 
         mNewEventLabel = v.findViewById(R.id.newEventLabel);
         mNewEventLabel.setText(mThisEvent.getLabel());
@@ -178,6 +205,8 @@ public class EventCreatorFragment extends Fragment {
             }
         });
 
+        initColorPicking(v);
+
         mSaveButton = v.findViewById(R.id.saveButton);
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -200,12 +229,47 @@ public class EventCreatorFragment extends Fragment {
                         mDayParent.addEvent(mThisEvent);
                     }
 
+                    mThisEvent.setBlockColorScheme(mBlockColorScheme);
+
                     sendResult();
                     getActivity().finish();
-
                 }
             }
         });
+    }
+
+    private void initColorPicking(View v){
+        final int[] colorIds = new int[]{R.color.eventBlockBackgroundDefault, R.color.eventBlockBackgroundBlue, R.color.eventBlockBackgroundGreen,
+                R.color.eventBlockBackgroundOrange, R.color.eventBlockBackgroundPink, R.color.eventBlockBackgroundRed, R.color.eventBlockBackgroundYellow};
+        final int[] onPressedColorsIds = new int[]{R.color.eventBlockBackgroundDefaultOnPressed, R.color.eventBlockBackgroundBlueOnPressed,
+                R.color.eventBlockBackgroundGreenOnPressed, R.color.eventBlockBackgroundOrangeOnPressed, R.color.eventBlockBackgroundPinkOnPressed,
+                R.color.eventBlockBackgroundRedOnPressed, R.color.eventBlockBackgroundYellowOnPressed};
+        final LinearLayout container = v.findViewById(R.id.colorLinearLayout);
+        ImageButton colorPicker;
+        GradientDrawable gradientDrawable;
+        Color currentColor;
+        for(int i=0; i<container.getChildCount(); i++){
+            colorPicker = (ImageButton) container.getChildAt(i);
+            gradientDrawable = (GradientDrawable) colorPicker.getBackground().getConstantState().newDrawable();
+            currentColor = Color.valueOf(getResources().getColor(colorIds[i], getContext().getTheme()));
+            // Re-constructing the color scheme to have 0 transparency
+            currentColor = Color.valueOf(currentColor.red(), currentColor.green(), currentColor.blue(), 1);
+            gradientDrawable.setColor(currentColor.toArgb());
+            colorPicker.setBackground(gradientDrawable);
+
+            colorPicker.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int index = container.indexOfChild(v);
+                    mBlockColorScheme[0] = colorIds[index];
+                    mBlockColorScheme[1] = onPressedColorsIds[index];
+                    Color color = Color.valueOf(getResources().getColor(colorIds[index], getContext().getTheme()));
+                    color = Color.valueOf(color.red(), color.green(), color.blue(), 1);
+                    mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+                    mActionBar.setBackgroundDrawable(new ColorDrawable(color.toArgb()));
+                }
+            });
+        }
     }
 
     public void sendResult(){
@@ -215,23 +279,23 @@ public class EventCreatorFragment extends Fragment {
         getActivity().setResult(Activity.RESULT_OK, data);
     }
 
-    // Initiates TimePickerFragment with respect to the relevant time-section (FROM or TO)
+    // Initiates TimePickerDialog with respect to the relevant time-section (FROM or TO)
     private void onTimePicking(View v){
         int requestCode;
         String tag;
-        TimePickerFragment timePicker;
+        TimePickerDialog timePicker;
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 
         if(v.getId() == R.id.eventStartAt){
             requestCode = FROM_TIME_REQUEST_CODE;
             tag = FROM_TIME_DIALOG_TAG;
-            timePicker = TimePickerFragment.
+            timePicker = TimePickerDialog.
                     newInstance(mStartCalendar.get(Calendar.HOUR_OF_DAY), mStartCalendar.get(Calendar.MINUTE));
         }
         else{
             requestCode = TO_TIME_REQUEST_CODE;
             tag = TO_TIME_DIALOG_TAG;
-            timePicker = TimePickerFragment.
+            timePicker = TimePickerDialog.
                     newInstance(mEndCalendar.get(Calendar.HOUR_OF_DAY), mEndCalendar.get(Calendar.MINUTE));
         }
 
@@ -239,14 +303,12 @@ public class EventCreatorFragment extends Fragment {
         timePicker.show(fragmentManager, tag);
     }
 
-
     // When on Until Next Event option, reset the end time according to the changes in the start time
-    private void resetUntilNextEvent(){
+    private int resetUntilNextEvent(){
         int startTime = mStartCalendar.get(Calendar.HOUR_OF_DAY)*60 + mStartCalendar.get(Calendar.MINUTE);
         Event event = mDayParent.findNextEvent(startTime);
         int endTime = event == null? (24*60)-1:event.getStartTime();
-        mEndCalendar.set(Calendar.HOUR_OF_DAY, endTime/60);
-        mEndCalendar.set(Calendar.MINUTE, endTime%60);
+        return endTime;
     }
 
     // Handles results from dialogs etc.
@@ -265,9 +327,12 @@ public class EventCreatorFragment extends Fragment {
                 mStartCalendar.set(Calendar.HOUR_OF_DAY, data.getIntExtra(EXTRA_HOUR_OF_DAY, 0));
                 mStartCalendar.set(Calendar.MINUTE, data.getIntExtra(EXTRA_MINUTES, 0));
                 mFromTimeButton.setText(DateFormat.format("HH:mm", mStartCalendar.getTime()));
-
-                if(mToTimeButton.getText().equals(getString(R.string.untilNextEvent)))
-                    resetUntilNextEvent();
+                int endTime;
+                if(mToTimeButton.getText().equals(getString(R.string.untilNextEvent))) {
+                    endTime = resetUntilNextEvent();
+                    mEndCalendar.set(Calendar.HOUR_OF_DAY, endTime/60);
+                    mEndCalendar.set(Calendar.MINUTE, endTime%60);
+                }
             } break;
             case RQ_LABEL_PICKER: {
                 mNewEventLabel.setText(data.getStringExtra(LabelPickerDialog.EX_LABEL));

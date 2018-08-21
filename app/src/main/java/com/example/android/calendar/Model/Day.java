@@ -1,7 +1,8 @@
-package com.example.android.calendar;
+package com.example.android.calendar.Model;
 
 import android.support.annotation.Nullable;
 import android.text.format.DateFormat;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;

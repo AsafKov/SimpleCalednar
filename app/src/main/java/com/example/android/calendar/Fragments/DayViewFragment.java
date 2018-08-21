@@ -1,31 +1,37 @@
-package com.example.android.calendar;
+package com.example.android.calendar.Fragments;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Toast;
+
+import com.example.android.calendar.Activities.EventCreatorActivity;
+import com.example.android.calendar.Model.Day;
+import com.example.android.calendar.Model.Event;
+import com.example.android.calendar.R;
+import com.example.android.calendar.Helpers.RecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
 public class DayViewFragment extends Fragment {
 
     public static final int RC_EDIT = 0;
     public static final int RC_ADD = 1;
-    public static final int RC_DELETE = 2;
 
     // App configuration keys
     public static final String DAY_ID = "dayId";
@@ -41,12 +47,13 @@ public class DayViewFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
-        // Restore data after app-configuration
+        // Restore data after app-configuration, will be replaced with database extraction
         if(savedInstanceState != null && !savedInstanceState.isEmpty())
             mDay = Day.findDayById(UUID.fromString(savedInstanceState.getString(DAY_ID)));
-        else
-            mDay = new Day(Calendar.getInstance().getTime());
-
+        else {
+            if (getArguments() != null && !getArguments().isEmpty())
+                mDay = new Day(new Date(getArguments().getLong(CalendarFragment.ARGS_DATE)));
+        }
         adapter = new RecyclerViewAdapter(getActivity(), new ArrayList<Event>(), this);
         adapter.updateDataSet(mDay.getEvents());
     }
@@ -82,9 +89,26 @@ public class DayViewFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext().getApplicationContext(), EventCreatorActivity.class);
-                intent.putExtra(RecyclerViewAdapter.EX_DAY_ID, mDay.getId());
-                startActivityForResult(intent, RC_ADD);
+                Animation fabButtonClickedAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.fab_animation);
+                fabButtonClickedAnimation.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        Intent intent = new Intent(getContext().getApplicationContext(), EventCreatorActivity.class);
+                        intent.putExtra(RecyclerViewAdapter.EX_DAY_ID, mDay.getId());
+                        startActivityForResult(intent, RC_ADD);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+                fab.startAnimation(fabButtonClickedAnimation);
             }
         });
     }
@@ -97,21 +121,19 @@ public class DayViewFragment extends Fragment {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem menuItem){
-        switch (menuItem.getItemId()){
-            case R.id.deleteEventMenuItem:{
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.deleteEventMenuItem: {
                 ArrayList<Event> pressedEvents = adapter.getPressedItems();
-                if(pressedEvents.isEmpty()){
+                if (pressedEvents.isEmpty()) {
                     Toast.makeText(getContext(), R.string.noEventsChosenToast, Toast.LENGTH_LONG).show();
                     return true;
                 }
                 mDay.removeEvents(pressedEvents);
-                adapter.onItemsRemoved();
                 adapter.updateDataSet(mDay.getEvents());
                 adapter.notifyDataSetChanged();
             }
         }
-
         return super.onOptionsItemSelected(menuItem);
     }
 

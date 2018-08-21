@@ -1,4 +1,4 @@
-package com.example.android.calendar;
+package com.example.android.calendar.Dialogs;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -7,7 +7,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
-import android.view.View;
+
+import com.example.android.calendar.Model.Event;
+import com.example.android.calendar.R;
 
 public class LabelPickerDialog extends DialogFragment {
 

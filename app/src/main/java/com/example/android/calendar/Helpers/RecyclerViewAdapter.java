@@ -1,18 +1,21 @@
-package com.example.android.calendar;
+package com.example.android.calendar.Helpers;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.example.android.calendar.Activities.EventCreatorActivity;
+import com.example.android.calendar.Fragments.DayViewFragment;
+import com.example.android.calendar.Model.Event;
+import com.example.android.calendar.R;
+
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.UUID;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.EventViewHolder>{
@@ -24,6 +27,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private Fragment mTargetFragment;
     private ArrayList<Event> mEvents;
     private ArrayList<Event> mPressedItems;
+    private ArrayList<View> mPressedViewItems;
 
     public class EventViewHolder extends RecyclerView.ViewHolder{
 
@@ -39,18 +43,20 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             mDuration = itemView.findViewById(R.id.eventBlockDuration);
         }
 
-        private void onLongPressMode(){
+        private void onLongPressMode(EventViewHolder holder){
             int colorId;
-            if (mPressedItems.contains(mEvents.get(this.getAdapterPosition()))) {
-                colorId = R.color.eventBlockBackground;
+            final Event event = mEvents.get(holder.getAdapterPosition());
+            if (mPressedItems.contains(event)) {
+                colorId = event.getBlockColorScheme()[0];
                 mPressedItems.remove(mEvents.get(this.getAdapterPosition()));
             }
             else {
-                colorId = R.color.eventBlockBackgroundOnPressed;
+                colorId = event.getBlockColorScheme()[1];
+                mPressedViewItems.add(holder.mEventBlockView);
                 mPressedItems.add(mEvents.get(this.getAdapterPosition()));
             }
 
-            this.itemView.setBackgroundColor(mTargetFragment.getResources().getColor(colorId, mContext.getTheme()));
+            this.itemView.setBackgroundColor(mContext.getResources().getColor(colorId, mContext.getTheme()));
         }
     }
 
@@ -59,6 +65,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         mEvents = events;
         mTargetFragment = targetFragment;
         mPressedItems = new ArrayList<>();
+        mPressedViewItems = new ArrayList<>();
     }
 
     public void updateDataSet(ArrayList<Event> events){
@@ -78,13 +85,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return this.mPressedItems;
     }
 
-    public void onItemsRemoved(){
-        mPressedItems.clear();
-    }
-
     @Override
     public void onViewRecycled(RecyclerViewAdapter.EventViewHolder holder){
-        holder.mEventBlockView.setBackgroundColor(mContext.getResources().getColor(R.color.eventBlockBackground, mContext.getTheme()));
         super.onViewRecycled(holder);
     }
 
@@ -92,7 +94,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public RecyclerViewAdapter.EventViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
         View itemView = layoutInflater.inflate(R.layout.event_block_layout, parent, false);
-        return new EventViewHolder(itemView);
+        EventViewHolder viewHolder = new EventViewHolder(itemView);
+        return viewHolder;
     }
 
     @Override
@@ -102,11 +105,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.mComment.setText(event.getComment());
         holder.mStartTime.setText(DateFormat.format("HH:mm", event.getTime()));
         holder.mDuration.setText(event.getDurationInFormat(mContext));
+        holder.itemView.setBackgroundColor(mContext.getResources().getColor(event.getBlockColorScheme()[0], mContext.getTheme()));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(!mPressedItems.isEmpty()){
-                    holder.onLongPressMode();
+                    holder.onLongPressMode(holder);
                     return;
                 }
                 Intent intent = new Intent(mContext.getApplicationContext(), EventCreatorActivity.class);
@@ -118,7 +122,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                holder.onLongPressMode();
+                holder.onLongPressMode(holder);
                 return true;
             }
         });
