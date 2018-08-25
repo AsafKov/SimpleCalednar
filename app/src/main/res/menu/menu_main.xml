@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dayViewMenu"
+    tools:context=".Activities.DayViewActivity">
+
+    <item
+        android:id="@+id/deleteEventMenuItem"
+        android:title="@string/contextMenuDelete"
+        android:orderInCategory="100"
+        android:icon="@android:drawable/ic_menu_delete"
+        app:showAsAction="always"
+        />
+</menu>
