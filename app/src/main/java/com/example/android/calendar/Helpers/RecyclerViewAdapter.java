@@ -21,39 +21,35 @@ import java.util.UUID;
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.EventViewHolder>{
 
     public static final String EX_EVENT_ID = "exEventId";
-    public static final String EX_DAY_ID = "exDayId";
+    public static final String EX_TIME_STAMP = "exTimeStamp";
 
     private Context mContext;
     private Fragment mTargetFragment;
     private ArrayList<Event> mEvents;
     private ArrayList<Event> mPressedItems;
-    private ArrayList<View> mPressedViewItems;
 
     public class EventViewHolder extends RecyclerView.ViewHolder{
 
-        public View mEventBlockView;
-        public TextView mLabel, mComment, mStartTime, mDuration;
+        private TextView mLabel, mComment, mStartTime, mDuration;
 
         public EventViewHolder(View itemView){
             super(itemView);
-            mEventBlockView = itemView;
             mLabel = itemView.findViewById(R.id.eventBlockLabel);
             mComment = itemView.findViewById(R.id.eventBlockComment);
             mStartTime = itemView.findViewById(R.id.eventBlockStartingTime);
             mDuration = itemView.findViewById(R.id.eventBlockDuration);
         }
 
-        private void onLongPressMode(EventViewHolder holder){
+        private void onLongPressMode(){
             int colorId;
-            final Event event = mEvents.get(holder.getAdapterPosition());
+            final Event event = mEvents.get(this.getAdapterPosition());
             if (mPressedItems.contains(event)) {
-                colorId = event.getBlockColorScheme()[0];
-                mPressedItems.remove(mEvents.get(this.getAdapterPosition()));
+                colorId = event.getBlockDefaultColor();
+                mPressedItems.remove(event);
             }
             else {
-                colorId = event.getBlockColorScheme()[1];
-                mPressedViewItems.add(holder.mEventBlockView);
-                mPressedItems.add(mEvents.get(this.getAdapterPosition()));
+                colorId = event.getBlockDefaultColor()+1;
+                mPressedItems.add(event);
             }
 
             this.itemView.setBackgroundColor(mContext.getResources().getColor(colorId, mContext.getTheme()));
@@ -65,7 +61,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         mEvents = events;
         mTargetFragment = targetFragment;
         mPressedItems = new ArrayList<>();
-        mPressedViewItems = new ArrayList<>();
     }
 
     public void updateDataSet(ArrayList<Event> events){
@@ -73,17 +68,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         mEvents.addAll(events);
     }
 
-    public int getPreviousPosition(UUID eventId){
-        for(int i=0; i<mEvents.size(); i++){
-            if(mEvents.get(i).getId().compareTo(eventId) == 0)
-                return i;
-        }
-        return -1;
-    }
-
     public ArrayList<Event> getPressedItems(){
         return this.mPressedItems;
     }
+
+    public void layOffPressedItems(){ mPressedItems.clear(); }
 
     @Override
     public void onViewRecycled(RecyclerViewAdapter.EventViewHolder holder){
@@ -101,28 +90,34 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onBindViewHolder(final RecyclerViewAdapter.EventViewHolder holder, int position) {
         final Event event = mEvents.get(position);
+
         holder.mLabel.setText(event.getLabel());
         holder.mComment.setText(event.getComment());
         holder.mStartTime.setText(DateFormat.format("HH:mm", event.getTime()));
         holder.mDuration.setText(event.getDurationInFormat(mContext));
-        holder.itemView.setBackgroundColor(mContext.getResources().getColor(event.getBlockColorScheme()[0], mContext.getTheme()));
+
+        holder.itemView.setBackgroundColor(mContext.getResources().getColor(event.getBlockDefaultColor(), mContext.getTheme()));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(!mPressedItems.isEmpty()){
-                    holder.onLongPressMode(holder);
+                    // If an item is already on long-press state, every click or press will get any
+                    // other item into the same state, for a potential action on multiple items
+                    holder.onLongPressMode();
                     return;
                 }
+                v.setClickable(false);
                 Intent intent = new Intent(mContext.getApplicationContext(), EventCreatorActivity.class);
                 intent.putExtra(EX_EVENT_ID, event.getId());
-                intent.putExtra(EX_DAY_ID, event.getParent().getId());
-                mTargetFragment.startActivityForResult(intent, DayViewFragment.RC_EDIT);
+                intent.putExtra(EX_TIME_STAMP, event.getDayTimeStamp());
+                mTargetFragment.startActivity(intent);
+                v.setClickable(true);
             }
         });
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                holder.onLongPressMode(holder);
+                holder.onLongPressMode();
                 return true;
             }
         });

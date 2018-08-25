@@ -5,13 +5,200 @@
     android:id="@+id/eventCreator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="8dp"
-    android:layout_marginEnd="24dp"
-    android:layout_marginStart="8dp"
-    android:minHeight="1dp"
-    android:minWidth="1dp"
     android:orientation="vertical"
     tools:context="com.example.android.calendar.Activities.EventCreatorActivity">
+
+    <TextView
+        android:id="@+id/timeTextVIew"
+        style="@style/headlines_style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/eventTimeTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/separator"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="8dp"
+        android:background="#e43b6ff2"
+        app:layout_constraintEnd_toEndOf="@+id/timeTextVIew"
+        app:layout_constraintStart_toStartOf="@+id/timeTextVIew"
+        app:layout_constraintTop_toBottomOf="@+id/timeTextVIew" />
+
+    <TextView
+        android:id="@+id/startTextView"
+        android:text="@string/startTextView"
+        style="@style/headlines_style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textSize="14sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/eventStartAt"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/separator" />
+
+    <Button
+        android:id="@+id/eventStartAt"
+        android:text="@string/defaultTimeDisplay"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="12dp"
+        android:background="@color/transparent"
+        android:minHeight="1dp"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="@+id/separator"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/startTextView"
+        app:layout_constraintTop_toBottomOf="@+id/separator" />
+
+    <TextView
+        android:id="@+id/endTextView"
+        style="@style/headlines_style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/endTextView"
+        android:textSize="14sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/eventEndsAt"
+        app:layout_constraintBottom_toTopOf="@+id/separator2"
+        app:layout_constraintStart_toStartOf="@+id/startTextView"
+        app:layout_constraintTop_toBottomOf="@+id/startTextView"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/eventEndsAt"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@color/transparent"
+        android:minHeight="1dp"
+        android:text="@string/untilNextEvent"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/startTextView"
+        app:layout_constraintEnd_toEndOf="@+id/eventStartAt"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/eventStartAt"
+        app:layout_constraintTop_toBottomOf="@+id/eventStartAt"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/detailsTextView"
+        style="@style/headlines_style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:text="@string/eventDetailsTextView"
+        app:layout_constraintBottom_toTopOf="@+id/separator2"
+        app:layout_constraintEnd_toEndOf="@+id/endTextView"
+        app:layout_constraintHorizontal_bias="0.173"
+        app:layout_constraintStart_toStartOf="@+id/endTextView"
+        app:layout_constraintTop_toBottomOf="@+id/endTextView" />
+
+    <View
+        android:id="@+id/separator2"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="44dp"
+        android:background="#e43b6ff2"
+        app:layout_constraintEnd_toEndOf="@+id/detailsTextView"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/detailsTextView"
+        app:layout_constraintTop_toBottomOf="@+id/eventEndsAt" />
+
+    <TextView
+        android:id="@+id/labelTextVIew"
+        style="@style/headlines_style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:drawableStart="@drawable/label_icon"
+        android:text="@string/eventLabelTextView"
+        android:textAlignment="textStart"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="@+id/separator2"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/separator2"
+        app:layout_constraintTop_toBottomOf="@+id/separator2" />
+
+    <Button
+        android:id="@+id/newEventLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/transparent"
+        android:minHeight="1dp"
+        android:text="@string/defaultLabel"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textSize="14sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/labelTextVIew"
+        app:layout_constraintEnd_toEndOf="@+id/separator2"
+        app:layout_constraintStart_toEndOf="@+id/labelTextVIew"
+        app:layout_constraintTop_toBottomOf="@+id/separator2" />
+
+    <TextView
+        android:id="@+id/commentTextVIew"
+        style="@style/headlines_style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:drawableStart="@drawable/comment_icon"
+        android:text="@string/eventCommentTextView"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@+id/labelTextVIew"
+        app:layout_constraintTop_toBottomOf="@+id/labelTextVIew" />
+
+    <EditText
+        android:id="@+id/newEventComment"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:hint="@string/eventCommentHint"
+        android:inputType="textMultiLine"
+        android:maxLength="100"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        app:layout_constraintBaseline_toBaselineOf="@+id/commentTextVIew"
+        app:layout_constraintEnd_toEndOf="@+id/newEventLabel"
+        app:layout_constraintStart_toEndOf="@+id/commentTextVIew"
+        app:layout_constraintTop_toBottomOf="@+id/newEventLabel" />
+
+    <TextView
+        android:id="@+id/settingTextView"
+        style="@style/headlines_style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/settingsTextView"
+        app:layout_constraintBottom_toTopOf="@+id/separator3"
+        app:layout_constraintEnd_toEndOf="@+id/commentTextVIew"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/commentTextVIew"
+        app:layout_constraintTop_toBottomOf="@+id/commentTextVIew"
+        app:layout_constraintVertical_bias="1.0" />
 
 
     <View
@@ -21,377 +208,75 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="24dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
         android:background="#e43b6ff2"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/separator2"
-        app:layout_constraintVertical_bias="0.2865" />
-
-    <TextView
-        android:id="@+id/settingTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/settingsTextView"
-        android:textAllCaps="true"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.025"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/commentTextVIew"
-        app:layout_constraintVertical_bias="0.050000012" />
-
-    <Button
-        android:id="@+id/saveButton"
-        style="@style/Widget.AppCompat.Button.Small"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="52dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/save"
-        android:textAppearance="@style/TextAppearance.AppCompat.Button"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/newEventComment"
-        app:layout_constraintVertical_bias="0.966" />
-
-    <EditText
-        android:id="@+id/newEventComment"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="356dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:ems="10"
-        android:hint="@string/eventCommentHint"
-        android:inputType="textMultiLine"
-        android:maxLength="100"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/commentTextVIew"
-        app:layout_constraintTop_toBottomOf="@+id/labelLinearLayout" />
-
-    <TextView
-        android:id="@+id/commentTextVIew"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="356dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:drawableStart="@drawable/comment_icon"
-        android:text="@string/eventCommentTextView"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/labelLinearLayout"
-        app:layout_constraintVertical_bias="0.75" />
-
-    <View
-        android:id="@+id/separator2"
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginStart="8dp"
-        android:background="#e43b6ff2"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/detailsTextView"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <TextView
-        android:id="@+id/detailsTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/eventDetailsTextView"
-        android:textAllCaps="true"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/colorLinearLayout"
+        app:layout_constraintEnd_toEndOf="@+id/settingTextView"
         app:layout_constraintHorizontal_bias="0.024"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/endLinearLayout"
+        app:layout_constraintStart_toStartOf="@+id/settingTextView"
+        app:layout_constraintTop_toBottomOf="@+id/newEventComment"
         app:layout_constraintVertical_bias="0.0" />
-
-    <TextView
-        android:id="@+id/timeTextVIew"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/eventTimeTextView"
-        android:textAllCaps="true"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/separator"
-        app:layout_constraintVertical_bias="0.42000002" />
-
-    <View
-        android:id="@+id/separator"
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginStart="8dp"
-        android:background="#e43b6ff2"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/timeTextVIew"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <LinearLayout
-        android:id="@+id/startLinearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/separator"
-        app:layout_constraintVertical_bias="0.0">
-
-        <TextView
-            android:id="@+id/startTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_weight="0.1"
-            android:text="@string/startTextView"
-            android:textAlignment="textStart"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.022"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/timeTextVIew"
-            app:layout_constraintVertical_bias="0.024" />
-
-        <Button
-            android:id="@+id/eventStartAt"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="8dp"
-            android:layout_weight="9"
-            android:background="@color/transparent"
-            android:minHeight="1dp"
-            android:textAlignment="center"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toEndOf="@+id/startTextView"
-            app:layout_constraintTop_toBottomOf="@+id/timeTextVIew"
-            app:layout_constraintVertical_bias="0.04000002"
-            tools:text="@string/defaultTimeDisplay" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/endLinearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/startLinearLayout">
-
-        <TextView
-            android:id="@+id/endTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_weight="0.3"
-            android:text="@string/endTextView"
-            android:textAlignment="textStart"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.021"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/startTextView"
-            app:layout_constraintVertical_bias="0.018" />
-
-        <Button
-            android:id="@+id/eventEndsAt"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="8dp"
-            android:layout_weight="9"
-            android:background="@color/transparent"
-            android:minHeight="1dp"
-            android:text="@string/untilNextEvent"
-            android:textAlignment="center"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/endTextView"
-            app:layout_constraintTop_toBottomOf="@+id/eventStartAt"
-            app:layout_constraintVertical_bias="0.01999998" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/labelLinearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="228dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/separator2"
-        app:layout_constraintVertical_bias="0.011">
-
-        <TextView
-            android:id="@+id/labelTextVIew"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_weight="0.1"
-            android:drawableStart="@drawable/label_icon"
-            android:text="@string/eventLabelTextView"
-            android:textAlignment="textStart"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.023"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/detailsTextView"
-            app:layout_constraintVertical_bias="0.029999971" />
-
-        <Button
-            android:id="@+id/newEventLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="8dp"
-            android:layout_weight="9"
-            android:background="@color/transparent"
-            android:minHeight="1dp"
-            android:text="@string/defaultLabel"
-            android:textAlignment="center"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toEndOf="@+id/labelTextVIew"
-            app:layout_constraintTop_toBottomOf="@+id/separator2"
-            app:layout_constraintVertical_bias="0.045" />
-
-    </LinearLayout>
 
     <TextView
         android:id="@+id/colorPickerTextView"
+        style="@style/headlines_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginTop="12dp"
         android:text="@string/colorTextView"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.024"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/separator3"
-        app:layout_constraintVertical_bias="0.052" />
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@+id/colorLinearLayout"
+        app:layout_constraintEnd_toEndOf="@+id/separator3"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/separator3"
+        app:layout_constraintTop_toBottomOf="@+id/settingTextView" />
 
     <LinearLayout
         android:id="@+id/colorLinearLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/saveButton"
+        app:layout_constraintEnd_toEndOf="@+id/colorPickerTextView"
+        app:layout_constraintHorizontal_bias="0.036"
+        app:layout_constraintStart_toStartOf="@+id/colorPickerTextView"
+        app:layout_constraintTop_toBottomOf="@+id/newEventComment"
+        app:layout_constraintVertical_bias="0.175">
+
+        <include layout="@layout/color_picker_button" />
+
+        <include layout="@layout/color_picker_button" />
+
+        <include layout="@layout/color_picker_button" />
+
+        <include layout="@layout/color_picker_button" />
+
+        <include layout="@layout/color_picker_button" />
+
+        <include layout="@layout/color_picker_button" />
+
+        <include layout="@layout/color_picker_button" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/saveButton"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:layout_width="59dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:orientation="horizontal"
+        android:layout_marginTop="8dp"
+        android:text="@string/save"
+        android:textAppearance="@style/TextAppearance.AppCompat.Button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.023"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/separator3"
-        app:layout_constraintVertical_bias="0.13">
-
-        <include layout="@layout/color_picker_button" />
-        <include layout="@layout/color_picker_button" />
-        <include layout="@layout/color_picker_button" />
-        <include layout="@layout/color_picker_button" />
-        <include layout="@layout/color_picker_button" />
-        <include layout="@layout/color_picker_button" />
-        <include layout="@layout/color_picker_button" />
-
-
-    </LinearLayout>
+        app:layout_constraintTop_toBottomOf="@+id/newEventComment"
+        app:layout_constraintVertical_bias="1.0" />
 
 </android.support.constraint.ConstraintLayout>

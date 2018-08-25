@@ -6,7 +6,7 @@
     <color name="colorPrimaryDark">#cd0e0e33</color>
     <color name="colorAccent">#e44a587a</color>
 
-    <color name="colorBackground">#5bb7bac0</color>
+    <color name="colorBackground">#5bd8dde7</color>
     <color name="eventBlockBackgroundDefault">#32535f6b</color>
     <color name="eventBlockBackgroundDefaultOnPressed">#4b1d1f22</color>
     <color name="eventBlockBackgroundRed">#64e20834</color>
