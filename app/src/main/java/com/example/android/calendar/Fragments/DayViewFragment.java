@@ -24,7 +24,6 @@ import com.example.android.calendar.Database.EventViewModel;
 import com.example.android.calendar.Model.Event;
 import com.example.android.calendar.R;
 import com.example.android.calendar.Helpers.RecyclerViewAdapter;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

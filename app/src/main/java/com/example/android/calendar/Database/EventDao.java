@@ -8,7 +8,6 @@ import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 import com.example.android.calendar.Model.Event;
 import java.util.List;
-import java.util.UUID;
 
 @Dao
 public interface EventDao {

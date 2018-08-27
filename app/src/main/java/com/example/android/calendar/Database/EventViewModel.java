@@ -3,16 +3,13 @@ package com.example.android.calendar.Database;
 import android.app.Application;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
-import android.app.job.JobWorkItem;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
-
 import com.example.android.calendar.Fragments.DayViewFragment;
 import com.example.android.calendar.Model.Event;
 import com.example.android.calendar.Helpers.NotificationJobsManager;

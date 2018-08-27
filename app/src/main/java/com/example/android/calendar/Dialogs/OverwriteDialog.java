@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.View;
-
 import com.example.android.calendar.Fragments.EventCreatorFragment;
 import com.example.android.calendar.R;
 

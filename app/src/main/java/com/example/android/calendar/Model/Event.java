@@ -1,19 +1,12 @@
 package com.example.android.calendar.Model;
 
 import android.arch.persistence.room.ColumnInfo;
-import android.arch.persistence.room.Database;
-import android.arch.persistence.room.Embedded;
 import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.content.Context;
 import android.support.annotation.NonNull;
-
+import android.text.format.DateFormat;
 import com.example.android.calendar.R;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
@@ -142,6 +135,10 @@ public class Event{
     }
     public int getBlockDefaultColor(){return mBlockDefaultColor; }
     public long getDayTimeStamp(){ return mDayTimeStamp; }
+    public void setNotificationDelay(int notificationDelay){
+        mNotificationDelay = notificationDelay;
+    }
+    public int getNotificationDelay(){ return mNotificationDelay; }
     public Date getDate(){
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, this.mStartTime/60);
@@ -151,8 +148,13 @@ public class Event{
 
         return calendar.getTime();
     }
-    public void setNotificationDelay(int notificationDelay){
-        mNotificationDelay = notificationDelay;
+    public String getAltComment(){
+        String altComment = "";
+        Date date = getDate();
+        altComment += DateFormat.format("HH:mm", date) + " - ";
+        date.setTime(date.getTime() + (mEndTime - mStartTime)*1000*60);
+        altComment += DateFormat.format("HH:mm", date);
+
+        return altComment;
     }
-    public int getNotificationDelay(){ return mNotificationDelay; }
 }

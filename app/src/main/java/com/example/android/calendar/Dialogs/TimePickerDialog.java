@@ -9,7 +9,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.TimePicker;
-
 import com.example.android.calendar.Fragments.EventCreatorFragment;
 import com.example.android.calendar.R;
 

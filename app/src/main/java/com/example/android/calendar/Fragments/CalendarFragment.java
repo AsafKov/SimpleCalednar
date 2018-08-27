@@ -1,8 +1,5 @@
 package com.example.android.calendar.Fragments;
 
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;

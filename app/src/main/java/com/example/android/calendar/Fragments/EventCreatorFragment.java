@@ -1,7 +1,6 @@
 package com.example.android.calendar.Fragments;
 
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -22,7 +21,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
 import com.example.android.calendar.Database.EventViewModel;
 import com.example.android.calendar.Dialogs.LabelPickerDialog;
 import com.example.android.calendar.Dialogs.NotificationDelayDialog;
@@ -30,7 +28,6 @@ import com.example.android.calendar.Dialogs.OverwriteDialog;
 import com.example.android.calendar.Dialogs.TimePickerDialog;
 import com.example.android.calendar.R;
 import com.example.android.calendar.Helpers.RecyclerViewAdapter;
-
 import java.util.Calendar;
 import java.util.UUID;
 
