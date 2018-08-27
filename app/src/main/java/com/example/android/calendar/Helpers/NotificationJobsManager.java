@@ -5,10 +5,6 @@ import android.app.NotificationManager;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.Context;
-import android.util.Log;
-
-import com.example.android.calendar.Model.Event;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
