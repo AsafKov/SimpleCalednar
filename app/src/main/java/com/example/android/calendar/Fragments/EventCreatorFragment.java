@@ -1,6 +1,7 @@
 package com.example.android.calendar.Fragments;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -13,9 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -26,15 +25,13 @@ import android.widget.Toast;
 
 import com.example.android.calendar.Database.EventViewModel;
 import com.example.android.calendar.Dialogs.LabelPickerDialog;
+import com.example.android.calendar.Dialogs.NotificationDelayDialog;
 import com.example.android.calendar.Dialogs.OverwriteDialog;
 import com.example.android.calendar.Dialogs.TimePickerDialog;
-import com.example.android.calendar.Model.Event;
 import com.example.android.calendar.R;
 import com.example.android.calendar.Helpers.RecyclerViewAdapter;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.UUID;
 
 public class EventCreatorFragment extends Fragment {
@@ -55,12 +52,16 @@ public class EventCreatorFragment extends Fragment {
     public static final String OVERWRITE_DIALOG_TAG = "overrideDialogTag";
     public static final int OVERWRITE_DIALOG_REQUEST = 115;
 
+    // NotificationDelayDialog tags and codes
+    public static final String NOTIFICATION_DELAY_DIALOG_TAG = "notificationDelayDialog";
+    public static final int NOTIFICATION_DELAY_DIALOG_REQUEST = 117;
+
     public static final String TAG_LABEL_PICKER = "labelPickerDialog";
     private static final int RQ_LABEL_PICKER = 116;
 
     // Widgets
     private EditText mNewEventComment;
-    private Button mSaveButton, mNewEventLabel, mFromTimeButton, mToTimeButton;
+    private Button mSaveButton, mNewEventLabel, mFromTimeButton, mToTimeButton, mAddNotificationButton;
     private ActionBar mActionBar;
 
     private EventViewModel mEventViewModel;
@@ -73,7 +74,7 @@ public class EventCreatorFragment extends Fragment {
 
         if(intent != null && savedInstanceState == null){
             mEventViewModel.setTimeStamp((long) intent.getSerializableExtra(RecyclerViewAdapter.EX_TIME_STAMP));
-            mEventViewModel.getEventById((UUID)intent.getSerializableExtra(RecyclerViewAdapter.EX_EVENT_ID));
+            mEventViewModel.findEventById((UUID)intent.getSerializableExtra(RecyclerViewAdapter.EX_EVENT_ID));
             mEventViewModel.adjustCalendars();
         }
     }
@@ -149,6 +150,20 @@ public class EventCreatorFragment extends Fragment {
         });
 
         initColorPicking(v);
+
+        mAddNotificationButton = v.findViewById(R.id.addNotificationButton);
+        if(!mEventViewModel.isNewEvent() && mEventViewModel.getNotificationDelay() != -1)
+            mAddNotificationButton.setText(getString(NotificationDelayDialog.options[mEventViewModel.getNotificationDelay()/5]));
+
+        mAddNotificationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                NotificationDelayDialog notificationDialog = new NotificationDelayDialog();
+                notificationDialog.setTargetFragment(EventCreatorFragment.this, NOTIFICATION_DELAY_DIALOG_REQUEST);
+                notificationDialog.show(fragmentManager, NOTIFICATION_DELAY_DIALOG_TAG);
+            }
+        });
 
         mSaveButton = v.findViewById(R.id.saveButton);
         mSaveButton.setOnClickListener(new View.OnClickListener() {
@@ -274,7 +289,46 @@ public class EventCreatorFragment extends Fragment {
                 mEventViewModel.changeForCurrentEvent(); // No need to validate info
                 getActivity().finish();
             } break;
+            case NOTIFICATION_DELAY_DIALOG_REQUEST: {
+                int optionId = data.getIntExtra(NotificationDelayDialog.EX_DELAY_CHOSEN, -1);
+                handleHandleDelayResult(optionId);
+
+            }
         }
     }
 
+    // Handling the result from NotificationDelayDialog
+    private void handleHandleDelayResult(int optionId){
+        int notificationDelay = 0;
+        int notificationStatus = optionId;
+        switch (optionId){
+            case R.string.atTimeOfEvent: {
+                notificationDelay = 0;
+            } break;
+            case R.string.on5MinutesPrior: {
+                notificationDelay = 5;
+            } break;
+            case R.string.on10MinutesPrior: {
+                notificationDelay = 10;
+            } break;
+            case R.string.on15MinutesPrior: {
+                notificationDelay = 15;
+            } break;
+            case R.string.on20MinutesPrior: {
+                notificationDelay = 20;
+            } break;
+            case R.string.on25MinutesPrior: {
+                notificationDelay = 25;
+                notificationStatus = R.string.on25MinutesPrior;
+            } break;
+            case R.string.on30MinutesPrior: {
+                notificationDelay = 30;
+            } break;
+            case R.string.noNotification: {
+                notificationDelay = -1;
+            } break;
+        }
+        mEventViewModel.setNotificationDelay(notificationDelay);
+        mAddNotificationButton.setText(getString(notificationStatus));
+    }
 }

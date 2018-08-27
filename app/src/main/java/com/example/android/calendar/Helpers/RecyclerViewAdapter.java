@@ -2,6 +2,7 @@ package com.example.android.calendar.Helpers;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.GradientDrawable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
@@ -92,8 +93,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         final Event event = mEvents.get(position);
 
         holder.mLabel.setText(event.getLabel());
+        if(mEvents.get(holder.getAdapterPosition()).getNotificationDelay() != -1)
+            holder.mLabel.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.notification_icon, 0);
+        else
+            holder.mLabel.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
+
         holder.mComment.setText(event.getComment());
-        holder.mStartTime.setText(DateFormat.format("HH:mm", event.getTime()));
+        holder.mStartTime.setText(DateFormat.format("HH:mm", event.getDate()));
         holder.mDuration.setText(event.getDurationInFormat(mContext));
 
         holder.itemView.setBackgroundColor(mContext.getResources().getColor(event.getBlockDefaultColor(), mContext.getTheme()));

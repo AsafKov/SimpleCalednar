@@ -9,7 +9,7 @@ import android.content.Context;
 import com.example.android.calendar.Model.Event;
 
 @TypeConverters(EventTypeConverter.class)
-@Database(entities = Event.class, version = 2)
+@Database(entities = Event.class, version = 3)
 public abstract class EventRoomDatabase extends RoomDatabase {
 
     public abstract EventDao mEventDao();

@@ -9,7 +9,7 @@
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`day_parent_stamp` INTEGER NOT NULL, `label` TEXT NOT NULL, `comment` TEXT NOT NULL, `id` TEXT NOT NULL, `default_block_color` INTEGER NOT NULL, `start_time` INTEGER NOT NULL, `end_time` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
-            "fieldPath": "mDayParent",
+            "fieldPath": "mDayTimeStamp",
             "columnName": "day_parent_stamp",
             "affinity": "INTEGER",
             "notNull": true
@@ -33,7 +33,7 @@
             "notNull": true
           },
           {
-            "fieldPath": "mBlockColorScheme",
+            "fieldPath": "mBlockDefaultColor",
             "columnName": "default_block_color",
             "affinity": "INTEGER",
             "notNull": true

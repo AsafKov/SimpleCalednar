@@ -1,17 +1,30 @@
 package com.example.android.calendar.Database;
 
 import android.app.Application;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.app.job.JobWorkItem;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
+import android.util.Log;
+
 import com.example.android.calendar.Fragments.DayViewFragment;
 import com.example.android.calendar.Model.Event;
+import com.example.android.calendar.Helpers.NotificationJobsManager;
+import com.example.android.calendar.Services.NotificationJobService;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
 public class EventViewModel extends AndroidViewModel {
+
+    private static final String TAG = "EventViewModel";
 
     public static final String ERR_INVALID_TIME = "invalidTimeError";
     public static final String ERR_REQUIRE_OVERWRITE = "requireOverwriteError";
@@ -27,9 +40,10 @@ public class EventViewModel extends AndroidViewModel {
     private String mEventLabel;
     private String mEventComment;
     private int mBlockDefaultColor;
+    private int mNotificationDelay = -1;
 
     private ArrayList<Event> intersectingEvents;
-    private boolean mNewEvent;
+    private boolean mIsNewEvent;
 
     public EventViewModel(@NonNull Application application){
         super(application);
@@ -48,8 +62,9 @@ public class EventViewModel extends AndroidViewModel {
         mThisEvent.scheduleEvent(Event.START_TIME_KEY, mStartCalendar.get(Calendar.HOUR_OF_DAY), mStartCalendar.get(Calendar.MINUTE));
         mThisEvent.scheduleEvent(Event.END_TIME_KEY, mEndCalendar.get(Calendar.HOUR_OF_DAY), mEndCalendar.get(Calendar.MINUTE));
         mThisEvent.setBlockDefaultColor(mBlockDefaultColor);
+        mThisEvent.setNotificationDelay(mNotificationDelay);
 
-        if(mNewEvent)
+        if(mIsNewEvent)
             insert(mThisEvent);
         else
             update(mThisEvent);
@@ -57,17 +72,22 @@ public class EventViewModel extends AndroidViewModel {
     }
 
     public void insert(Event event){
+        enqueueNotificationJob(event);
         mEventRepository.insert(event);
     }
 
     public void delete(ArrayList<Event> events){
         Event[] eventsArray = new Event[events.size()];
-        for(int i=0; i<events.size(); i++)
+        for(int i=0; i<events.size(); i++) {
             eventsArray[i] = events.get(i);
+            deleteNotificationJob(events.get(i));
+        }
+
         mEventRepository.delete(eventsArray);
     }
 
     public void update(Event event){
+        enqueueNotificationJob(event);
         mEventRepository.update(event);
     }
 
@@ -157,7 +177,7 @@ public class EventViewModel extends AndroidViewModel {
         int startingTime = 0;
         int endingTime = 0;
         int lastEventEndTime;
-        if(!mNewEvent){
+        if(!mIsNewEvent){
             startingTime = mThisEvent.getStartTime();
             endingTime = mThisEvent.getEndTime();
             mStartCalendar.set(Calendar.HOUR_OF_DAY, (startingTime/60)%24);
@@ -199,6 +219,46 @@ public class EventViewModel extends AndroidViewModel {
         return null;
     }
 
+    // Deleting notifications-jobs
+    private void deleteNotificationJob(Event e){
+        JobScheduler jobScheduler = (JobScheduler) getApplication().getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        try {
+            jobScheduler.cancel(NotificationJobsManager.removeJob(e.getId()));
+        } catch (NullPointerException exception){
+            Log.i(TAG, "Event has no scheduled job");
+        }
+    }
+
+    // Creating notifications-jobs
+    private void enqueueNotificationJob(Event event){
+        deleteNotificationJob(event);
+
+        if(event.getDate().getTime() < System.currentTimeMillis())
+            return;
+
+
+        if(mNotificationDelay == -1)
+            return;
+
+        JobScheduler jobScheduler = (JobScheduler) getApplication().getApplicationContext().getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        int jobId = (int) System.currentTimeMillis();
+        ComponentName componentName = new ComponentName(getApplication().getApplicationContext(), NotificationJobService.class);
+        long scheduleFor = event.getDate().getTime() - System.currentTimeMillis() - event.getNotificationDelay()*1000*60;
+        PersistableBundle jobData = new PersistableBundle(1);
+        jobData.putString(NotificationJobsManager.EX_JOB_EVENT_ID, event.getId().toString());
+        jobData.putString(NotificationJobsManager.EX_TITLE, event.getLabel());
+        jobData.putString(NotificationJobsManager.EX_INFO, event.getComment());
+
+        JobInfo.Builder builder = new JobInfo.Builder(jobId, componentName);
+        builder.setPersisted(true);
+        builder.setMinimumLatency(scheduleFor);
+        builder.setOverrideDeadline(scheduleFor + 1000);
+        builder.setExtras(jobData);
+        JobInfo jobInfo = builder.build();
+        NotificationJobsManager.addJob(jobInfo, event.getId());
+        jobScheduler.schedule(jobInfo);
+    }
+
     // Getters-setters
     public void setTimeStamp(long stamp){
         this.mTimeStamp = stamp;
@@ -229,20 +289,25 @@ public class EventViewModel extends AndroidViewModel {
         this.mEventComment = comment;
     }
     public String getEventComment(){ return mThisEvent.getComment(); }
-    public void getEventById(UUID id){
+    public void findEventById(UUID id){
         for(Event e: mEventsUnderDay.getValue()){
             if(e.getId().compareTo(id) == 0) {
                 mThisEvent = e;
                 mEventLabel = e.getLabel();
                 mBlockDefaultColor = e.getBlockDefaultColor();
-                mNewEvent = false;
+                mNotificationDelay = e.getNotificationDelay();
+                mIsNewEvent = false;
                 return;
             }
         }
-        mNewEvent = true;
+        mIsNewEvent = true;
         mThisEvent = new Event(mTimeStamp);
         mEventLabel = mThisEvent.getLabel();
         mBlockDefaultColor = mThisEvent.getBlockDefaultColor();
     }
-    public boolean isNewEvent(){ return this.mNewEvent; }
+    public boolean isNewEvent(){ return mIsNewEvent; }
+    public void setNotificationDelay(int notificationDelay) {
+        mNotificationDelay = notificationDelay;
+    }
+    public int getNotificationDelay(){ return mNotificationDelay; }
 }

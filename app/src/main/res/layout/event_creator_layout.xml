@@ -9,7 +9,7 @@
     tools:context="com.example.android.calendar.Activities.EventCreatorActivity">
 
     <TextView
-        android:id="@+id/timeTextVIew"
+        android:id="@+id/timeTextView"
         style="@style/headlines_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -29,17 +29,18 @@
         android:layout_marginEnd="24dp"
         android:layout_marginStart="8dp"
         android:background="#e43b6ff2"
-        app:layout_constraintEnd_toEndOf="@+id/timeTextVIew"
-        app:layout_constraintStart_toStartOf="@+id/timeTextVIew"
-        app:layout_constraintTop_toBottomOf="@+id/timeTextVIew" />
+        app:layout_constraintEnd_toEndOf="@+id/timeTextView"
+        app:layout_constraintStart_toStartOf="@+id/timeTextView"
+        app:layout_constraintTop_toBottomOf="@+id/timeTextView" />
 
     <TextView
         android:id="@+id/startTextView"
-        android:text="@string/startTextView"
         style="@style/headlines_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:drawableStart="@drawable/start_time_icon"
+        android:text="@string/startTextView"
         android:textSize="14sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/eventStartAt"
         app:layout_constraintStart_toStartOf="parent"
@@ -47,7 +48,6 @@
 
     <Button
         android:id="@+id/eventStartAt"
-        android:text="@string/defaultTimeDisplay"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -55,6 +55,7 @@
         android:layout_marginTop="12dp"
         android:background="@color/transparent"
         android:minHeight="1dp"
+        android:text="@string/defaultTimeDisplay"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textSize="14sp"
@@ -70,6 +71,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="16dp"
+        android:drawableStart="@drawable/end_time_icon"
         android:text="@string/endTextView"
         android:textSize="14sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/eventEndsAt"
@@ -124,7 +126,7 @@
         app:layout_constraintTop_toBottomOf="@+id/eventEndsAt" />
 
     <TextView
-        android:id="@+id/labelTextVIew"
+        android:id="@+id/labelTextView"
         style="@style/headlines_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -151,13 +153,13 @@
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textSize="14sp"
-        app:layout_constraintBaseline_toBaselineOf="@+id/labelTextVIew"
+        app:layout_constraintBaseline_toBaselineOf="@+id/labelTextView"
         app:layout_constraintEnd_toEndOf="@+id/separator2"
-        app:layout_constraintStart_toEndOf="@+id/labelTextVIew"
+        app:layout_constraintStart_toEndOf="@+id/labelTextView"
         app:layout_constraintTop_toBottomOf="@+id/separator2" />
 
     <TextView
-        android:id="@+id/commentTextVIew"
+        android:id="@+id/commentTextView"
         style="@style/headlines_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -165,8 +167,8 @@
         android:drawableStart="@drawable/comment_icon"
         android:text="@string/eventCommentTextView"
         android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="@+id/labelTextVIew"
-        app:layout_constraintTop_toBottomOf="@+id/labelTextVIew" />
+        app:layout_constraintStart_toStartOf="@+id/labelTextView"
+        app:layout_constraintTop_toBottomOf="@+id/labelTextView" />
 
     <EditText
         android:id="@+id/newEventComment"
@@ -181,9 +183,9 @@
         android:maxLength="100"
         android:maxLines="1"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        app:layout_constraintBaseline_toBaselineOf="@+id/commentTextVIew"
+        app:layout_constraintBaseline_toBaselineOf="@+id/commentTextView"
         app:layout_constraintEnd_toEndOf="@+id/newEventLabel"
-        app:layout_constraintStart_toEndOf="@+id/commentTextVIew"
+        app:layout_constraintStart_toEndOf="@+id/commentTextView"
         app:layout_constraintTop_toBottomOf="@+id/newEventLabel" />
 
     <TextView
@@ -194,10 +196,10 @@
         android:layout_marginTop="16dp"
         android:text="@string/settingsTextView"
         app:layout_constraintBottom_toTopOf="@+id/separator3"
-        app:layout_constraintEnd_toEndOf="@+id/commentTextVIew"
+        app:layout_constraintEnd_toEndOf="@+id/commentTextView"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/commentTextVIew"
-        app:layout_constraintTop_toBottomOf="@+id/commentTextVIew"
+        app:layout_constraintStart_toStartOf="@+id/commentTextView"
+        app:layout_constraintTop_toBottomOf="@+id/commentTextView"
         app:layout_constraintVertical_bias="1.0" />
 
 
@@ -223,29 +225,30 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="8dp"
+        android:drawableStart="@drawable/color_panel_icon"
         android:text="@string/colorTextView"
         android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@+id/colorLinearLayout"
+        app:layout_constraintBottom_toTopOf="@+id/NotificationTextView"
         app:layout_constraintEnd_toEndOf="@+id/separator3"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/separator3"
-        app:layout_constraintTop_toBottomOf="@+id/settingTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/anchor"
+        app:layout_constraintVertical_bias="0.0" />
 
     <LinearLayout
         android:id="@+id/colorLinearLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/saveButton"
-        app:layout_constraintEnd_toEndOf="@+id/colorPickerTextView"
-        app:layout_constraintHorizontal_bias="0.036"
-        app:layout_constraintStart_toStartOf="@+id/colorPickerTextView"
-        app:layout_constraintTop_toBottomOf="@+id/newEventComment"
-        app:layout_constraintVertical_bias="0.175">
+        app:layout_constraintEnd_toEndOf="@+id/separator3"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/colorPickerTextView"
+        app:layout_constraintTop_toBottomOf="@+id/anchor"
+        app:layout_constraintVertical_bias="0.0">
 
         <include layout="@layout/color_picker_button" />
 
@@ -265,7 +268,7 @@
     <Button
         android:id="@+id/saveButton"
         style="@style/Widget.AppCompat.Button.Small"
-        android:layout_width="59dp"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
@@ -278,5 +281,61 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/newEventComment"
         app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/NotificationTextView"
+        style="@style/headlines_style"
+        android:layout_width="wrap_content"
+        android:layout_height="18dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:drawableStart="@drawable/notification_icon"
+        android:text="@string/notificationTextView"
+        android:textSize="14sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/addNotificationButton"
+        app:layout_constraintBottom_toTopOf="@+id/saveButton"
+        app:layout_constraintEnd_toEndOf="@+id/colorPickerTextView"
+        app:layout_constraintHorizontal_bias="0.137"
+        app:layout_constraintStart_toStartOf="@+id/colorPickerTextView"
+        app:layout_constraintTop_toBottomOf="@+id/colorLinearLayout"
+        app:layout_constraintVertical_bias="0.038" />
+
+    <Button
+        android:id="@+id/addNotificationButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/transparent"
+        android:hint="@string/addNotificationButton"
+        android:minHeight="1dp"
+        android:textAlignment="textStart"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@+id/saveButton"
+        app:layout_constraintEnd_toEndOf="@+id/colorLinearLayout"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/NotificationTextView"
+        app:layout_constraintTop_toBottomOf="@+id/anchor"
+        app:layout_constraintVertical_bias="0.110000014" />
+
+    <FrameLayout
+        android:id="@+id/anchor"
+        android:layout_width="wrap_content"
+        android:layout_height="3dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/saveButton"
+        app:layout_constraintEnd_toEndOf="@+id/separator3"
+        app:layout_constraintHorizontal_bias="0.385"
+        app:layout_constraintStart_toEndOf="@+id/settingTextView"
+        app:layout_constraintTop_toBottomOf="@+id/newEventComment"
+        app:layout_constraintVertical_bias="0.06999999">
+
+    </FrameLayout>
+
 
 </android.support.constraint.ConstraintLayout>

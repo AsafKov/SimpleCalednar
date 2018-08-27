@@ -9,15 +9,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="@string/overwriteDialogMessage"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+        android:textSize="14sp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:text="@string/overwriteDialogMessage" />
 
     <TextView
         android:id="@+id/overrideProgression"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         android:layout_marginStart="8dp"
-        android:text="@string/overwriteDialogProgression"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+        android:text="@string/overwriteDialogProgression" />
 
 </LinearLayout>

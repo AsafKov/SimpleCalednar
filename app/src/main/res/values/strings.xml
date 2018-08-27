@@ -9,16 +9,29 @@
     // LabelPickerDialog
     <string name="labelPickerHeadline">Labels:</string>
 
+    // NotificationDelayDialog
+    <string name="atTimeOfEvent">At time of event</string>
+    <string name="on5MinutesPrior">5 minutes before</string>
+    <string name="on10MinutesPrior">10 minutes before</string>
+    <string name="on15MinutesPrior">15 minutes before</string>
+    <string name="on20MinutesPrior">20 minutes before</string>
+    <string name="on25MinutesPrior">25 minutes before</string>
+    <string name="on30MinutesPrior">30 minutes before</string>
+    <string name="noNotification">No notification</string>
+    <string name="cancel">Cancel</string>
+
     // EventCreator
     <string name="eventLabelHint">Event Label</string>
     <string name="eventCommentHint">Location, notes, reminders&#8230;</string>
-    <string name="eventLabelTextView">Label:</string>
+    <string name="addNotificationButton">Add Notification</string>
+    <string name="eventLabelTextView">&#160;Label:</string>
     <string name="eventCommentTextView">&#160;Comment:</string>
     <string name="eventTimeTextView">Time:</string>
     <string name="eventDetailsTextView">Details:</string>
-    <string name="startTextView">Start:</string>
-    <string name="colorTextView">Color:</string>
-    <string name="endTextView">End:</string>
+    <string name="startTextView">&#160;Start:</string>
+    <string name="colorTextView">&#160;Color:</string>
+    <string name="endTextView">&#160;End:</string>
+    <string name="notificationTextView">&#160;Notification:</string>
     <string name="settingsTextView">Settings:</string>
     <string name="defaultLabel">Break</string> // To avoid warnings
     <string name="defaultTimeDisplay">00:00</string> // To avoid warnings

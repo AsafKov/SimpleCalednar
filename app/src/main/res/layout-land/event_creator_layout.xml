@@ -38,6 +38,7 @@
     <TextView
         android:id="@+id/startTextView"
         android:text="@string/startTextView"
+        android:drawableStart="@drawable/start_time_icon"
         style="@style/headlines_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -67,12 +68,13 @@
 
     <TextView
         android:id="@+id/endTextView"
+        android:text="@string/endTextView"
         style="@style/headlines_style"
+        android:drawableStart="@drawable/end_time_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="16dp"
-        android:text="@string/endTextView"
         android:textSize="14sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/eventEndsAt"
         app:layout_constraintBottom_toTopOf="@+id/separator2"
@@ -225,8 +227,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:drawableStart="@drawable/color_panel_icon"
         android:text="@string/colorTextView"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="@+id/saveButton"
@@ -234,7 +236,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/separator3"
         app:layout_constraintTop_toBottomOf="@+id/separator3"
-        app:layout_constraintVertical_bias="0.100000024" />
+        app:layout_constraintVertical_bias="0.06999999" />
 
     <LinearLayout
         android:id="@+id/colorLinearLayout"
@@ -242,15 +244,15 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="@+id/saveButton"
-        app:layout_constraintEnd_toEndOf="@+id/separator3"
-        app:layout_constraintHorizontal_bias="0.15"
-        app:layout_constraintStart_toStartOf="@+id/separator3"
+        app:layout_constraintEnd_toStartOf="@+id/saveButton"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/colorPickerTextView"
         app:layout_constraintTop_toTopOf="@+id/separator3"
-        app:layout_constraintVertical_bias="0.07999998">
+        app:layout_constraintVertical_bias="0.100000024">
 
         <include layout="@layout/color_picker_button" />
 
@@ -266,6 +268,44 @@
 
         <include layout="@layout/color_picker_button" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/NotificationTextView"
+        style="@style/headlines_style"
+        android:layout_width="wrap_content"
+        android:layout_height="18dp"
+        android:layout_marginBottom="8dp"
+        android:drawableStart="@drawable/notification_icon"
+        android:text="@string/notificationTextView"
+        android:textSize="14sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/addNotificationButton"
+        app:layout_constraintBottom_toTopOf="@+id/saveButton"
+        app:layout_constraintEnd_toEndOf="@+id/colorPickerTextView"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/colorPickerTextView"
+        app:layout_constraintTop_toBottomOf="@+id/colorLinearLayout"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/addNotificationButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/transparent"
+        android:hint="@string/addNotificationButton"
+        android:minHeight="1dp"
+        android:textAlignment="textStart"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/saveButton"
+        app:layout_constraintEnd_toEndOf="@+id/colorLinearLayout"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/NotificationTextView"
+        app:layout_constraintTop_toBottomOf="@+id/colorLinearLayout"
+        app:layout_constraintVertical_bias="0.100000024" />
 
     <Button
         android:id="@+id/saveButton"

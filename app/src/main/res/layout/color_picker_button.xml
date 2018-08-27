@@ -2,7 +2,6 @@
 <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="25dp"
     android:layout_height="25dp"
-    android:padding="20dp"
     android:layout_marginStart="12dp"
     android:background="@drawable/color_button">
 </ImageButton>

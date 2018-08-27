@@ -1,18 +1,19 @@
 package com.example.android.calendar.Fragments;
 
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CalendarView;
-
 import com.example.android.calendar.Activities.DayViewActivity;
+import com.example.android.calendar.Helpers.NotificationJobsManager;
 import com.example.android.calendar.R;
-
 import java.util.Calendar;
 
 public class CalendarFragment extends Fragment {
@@ -24,7 +25,8 @@ public class CalendarFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-
+        NotificationJobsManager.createNotificationChannel(getContext().getApplicationContext());
+        NotificationJobsManager.loadPendingJobs(getContext().getApplicationContext());
     }
 
     @Override

@@ -24,5 +24,4 @@ public interface EventDao {
 
     @Query("SELECT * from events_table WHERE day_parent_stamp = (:stamp) ORDER BY start_time")
     LiveData<List<Event>> getEventsOfDay(long stamp);
-
 }
