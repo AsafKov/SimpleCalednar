@@ -247,7 +247,10 @@ public class EventViewModel extends AndroidViewModel {
         PersistableBundle jobData = new PersistableBundle(1);
         jobData.putString(NotificationJobsManager.EX_JOB_EVENT_ID, event.getId().toString());
         jobData.putString(NotificationJobsManager.EX_TITLE, event.getLabel());
-        jobData.putString(NotificationJobsManager.EX_INFO, event.getComment());
+        if(event.getComment().length() != 0)
+            jobData.putString(NotificationJobsManager.EX_INFO, event.getComment());
+        else
+            jobData.putString(NotificationJobsManager.EX_INFO, event.getAltComment());
 
         JobInfo.Builder builder = new JobInfo.Builder(jobId, componentName);
         builder.setPersisted(true);
