@@ -25,6 +25,8 @@ While also providing a semi-intellegent system to manage the data and ease user 
 * Allowing a minor degree of user-customizable View.
 * More basic android functionalities and features...
 
+*Note: the targeted and min API is >26*
+
 ## License:
 * All the drawables used in the project are the property of the open-source website Material Design. [Link](https://material.io/)
 
