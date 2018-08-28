@@ -137,7 +137,7 @@ public class EventCreatorFragment extends Fragment {
         });
 
         mToTimeButton = v.findViewById(R.id.eventEndsAt);
-        if(!mEventViewModel.isNewEvent())
+        if(!mEventViewModel.isNewEvent() || mEventViewModel.isEndTimePicked())
             mToTimeButton.setText(DateFormat.format("HH:mm", mEventViewModel.getEndCalendar().getTime()));
         mToTimeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -149,7 +149,7 @@ public class EventCreatorFragment extends Fragment {
         initColorPicking(v);
 
         mAddNotificationButton = v.findViewById(R.id.addNotificationButton);
-        if(!mEventViewModel.isNewEvent() && mEventViewModel.getNotificationDelay() != -1)
+        if(mEventViewModel.getNotificationDelay() != -1)
             mAddNotificationButton.setText(getString(NotificationDelayDialog.options[mEventViewModel.getNotificationDelay()/5]));
 
         mAddNotificationButton.setOnClickListener(new View.OnClickListener() {
@@ -262,6 +262,7 @@ public class EventCreatorFragment extends Fragment {
                 minute = data.getIntExtra(EXTRA_MINUTES, mEventViewModel.getEndCalendar().get(Calendar.MINUTE));
 
                 mEventViewModel.setEndTime(hourOfDay, minute);
+                mEventViewModel.setEndTimePicked();
                 mToTimeButton.setText(DateFormat.format("HH:mm", mEventViewModel.getEndCalendar().getTime()));
             } break;
             case FROM_TIME_REQUEST_CODE: {

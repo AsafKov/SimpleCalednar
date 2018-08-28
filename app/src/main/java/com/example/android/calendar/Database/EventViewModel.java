@@ -41,6 +41,7 @@ public class EventViewModel extends AndroidViewModel {
 
     private ArrayList<Event> intersectingEvents;
     private boolean mIsNewEvent;
+    private boolean mEndTimePicked = false;
 
     public EventViewModel(@NonNull Application application){
         super(application);
@@ -306,6 +307,8 @@ public class EventViewModel extends AndroidViewModel {
         mBlockDefaultColor = mThisEvent.getBlockDefaultColor();
     }
     public boolean isNewEvent(){ return mIsNewEvent; }
+    public void setEndTimePicked(){ mEndTimePicked = true; }
+    public boolean isEndTimePicked(){ return mEndTimePicked; }
     public void setNotificationDelay(int notificationDelay) {
         mNotificationDelay = notificationDelay;
     }
